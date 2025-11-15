@@ -107,30 +107,30 @@ public class Servidor extends Componente implements Runnable{
         ready.setData("200");
         envioPaqueteUDP(ready, ms, grupo);
 
-        while (true){
-            //ESTO ES UNA PRUEBA
-        }
-
-        //Aquí se administra toda la carrera
-        /*boolean salida = false;
-        while (!salida){
-            if (posicionCamello1 < 200 || posicionCamello2 < 200 || posicionCamello3 < 200){
-                try {
-                    mensajes.PosicionCamello movimiento = (PosicionCamello) recibirPaqueteUDP(ms);
-                    if (movimiento.getCamello().equals(camello1)){
-                        posicionCamello1+=Integer.parseInt(movimiento.getData());
-                        //modificar en la UI
-                    } else if(movimiento.getCamello().equals(camello2)){
-                        posicionCamello2+=Integer.parseInt(movimiento.getData());
-                        //modificar en la UI
-                    } else if(movimiento.getCamello().equals(camello3)){
-                        posicionCamello3+=Integer.parseInt(movimiento.getData());
-                        //modificar en la UI
-                    }
-                } catch (IOException e) {} catch (ClassNotFoundException e) {}
-            } else {
-                salida = true;
-            }
-        }*/
+        // Aquí se administra toda la carrera
+//        boolean salida = false;
+//        while (!salida){
+//            if (posicionCamello1 < 775 || posicionCamello2 < 775 || posicionCamello3 < 775) {
+//                try {
+//                    PosicionCamello posicionCamello = (PosicionCamello) recibirPaqueteUDP(ms);
+//                    if (posicionCamello.getCamello().equals(camello1)) {
+//                        posicionCamello1+=Integer.parseInt(posicionCamello.getData());
+//                        // Actualizar la posición en la UI
+//                    } else if (posicionCamello.getCamello().equals(camello2)) {
+//                        posicionCamello2+=Integer.parseInt(posicionCamello.getData());
+//                        // Actualizar posición en la UI
+//                    } else if (posicionCamello.getCamello().equals(camello3)) {
+//                        posicionCamello3+=Integer.parseInt(posicionCamello.getData());
+//                        // Actualizar posición en la UI
+//                    }
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                } catch (ClassNotFoundException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            } else {
+//                salida = true;
+//            }
+//        }
     }
 }

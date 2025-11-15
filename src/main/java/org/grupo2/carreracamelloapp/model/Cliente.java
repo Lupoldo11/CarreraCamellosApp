@@ -9,7 +9,7 @@ import java.net.*;
 
 public class Cliente extends Componente implements Runnable{
     /******************************* Atributos Static *********************************************/
-    //Conexion TCP
+    //Conexión TCP
     public static int puertoTCP = 12345;
     public static String conexionTCP = "localhost"; //cambiar por IP del ordenador en la red WEDU
 
@@ -89,8 +89,8 @@ public class Cliente extends Componente implements Runnable{
     /**************************************** Hilo ***************************************/
     @Override
     public void run() {
-        //Esperar el listo del servidor con el boton en "no pulsable"
-        //El server envia un mensaje de cambio el boton a pulsable
+        // Esperar el listo del servidor con el boton en "no pulsable"
+        // El server envia un mensaje de cambio el boton a pulsable
 
         try {
             InicioCarrera ready = (InicioCarrera) recibirPaqueteUDP(ms); //Esta recepcion tiene que cambiar el boton a activo
