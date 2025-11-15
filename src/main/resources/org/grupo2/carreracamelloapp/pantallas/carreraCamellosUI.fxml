@@ -39,14 +39,14 @@
         </HBox>
         <HBox alignment="CENTER" prefHeight="231.0" prefWidth="846.0">
             <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="El ganador de la carrera es:" textAlignment="CENTER">
+                <Text id="winnerLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="El ganador de la carrera es:" textAlignment="CENTER">
                     <font>
                         <Font name="Arial Italic" size="26.0" />
                     </font>
                 </Text>
             </children>
         </HBox>
-        <Button fx:id="iniciarCarreraButton" onAction="#onIniciarCarreraClick" prefWidth="158.0" text="Iniciar carrera">
+        <Button fx:id="iniciarCarreraButton" disable="true" onAction="#onIniciarCarreraClick" prefWidth="158.0" text="Iniciar carrera">
             <font>
                 <Font name="Arial" size="14.0" />
             </font>

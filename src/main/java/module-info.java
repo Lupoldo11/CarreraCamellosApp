@@ -3,6 +3,7 @@ module org.grupo2.carreracamelloapp {
     requires javafx.fxml;
     requires javafx.graphics;
     requires javafx.base;
+    requires org.grupo2.carreracamelloapp;
 
     exports org.grupo2.carreracamelloapp.controller;
     exports org.grupo2.carreracamelloapp;

@@ -82,6 +82,7 @@ public class Servidor extends Componente implements Runnable{
 
                     enviarPaqueteTCP(mensajeMulti); //Envio de Objeto SendIPMulticast -> Client
                     ListoJoinMulticast ready = (ListoJoinMulticast) recibirPaqueteTCP();
+                    //
                     System.out.println("Cliente "+i+" -> "+ready.getData());
 
                     closeStream();
@@ -107,14 +108,10 @@ public class Servidor extends Componente implements Runnable{
         ready.setData("200");
         envioPaqueteUDP(ready, ms, grupo);
 
-        while (true){
-            //ESTO ES UNA PRUEBA
-        }
-
         //Aquí se administra toda la carrera
-        /*boolean salida = false;
+        boolean salida = false;
         while (!salida){
-            if (posicionCamello1 < 200 || posicionCamello2 < 200 || posicionCamello3 < 200){
+            /*if (posicionCamello1 < 755 || posicionCamello2 < 755 || posicionCamello3 < 755){
                 try {
                     mensajes.PosicionCamello movimiento = (PosicionCamello) recibirPaqueteUDP(ms);
                     if (movimiento.getCamello().equals(camello1)){
@@ -130,7 +127,7 @@ public class Servidor extends Componente implements Runnable{
                 } catch (IOException e) {} catch (ClassNotFoundException e) {}
             } else {
                 salida = true;
-            }
-        }*/
+            }*/
+        }
     }
 }

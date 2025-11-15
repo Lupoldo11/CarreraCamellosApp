@@ -1,7 +1,9 @@
 package org.grupo2.carreracamelloapp.model;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import org.grupo2.carreracamelloapp.StartApplication;
+import org.grupo2.carreracamelloapp.controller.CarreraCamellosController;
 import org.grupo2.carreracamelloapp.model.mensajes.*;
 
 import java.io.*;
@@ -19,6 +21,7 @@ public class Cliente extends Componente implements Runnable{
     private InetAddress grupo;
     private int puertoUDP;
     private Thread hiloConexión;
+    private String nombreCliente;
 
     private int posicionCamello1;
     private int posicionCamello2;
@@ -28,7 +31,8 @@ public class Cliente extends Componente implements Runnable{
     private String camello3;
 
     /**************************************** Constructor ***************************************/
-    public Cliente(SendIPMulticast ip){
+    public Cliente(SendIPMulticast ip, String nombreCliente){
+        this.nombreCliente = nombreCliente;
         hiloConexión = new Thread(this, "conexion");
         String[] config = ip.getData().split(",");
         this.ipMulti = config[0].trim();
@@ -36,9 +40,12 @@ public class Cliente extends Componente implements Runnable{
     }
 
     /**************************************** Métodos *******************************************/
-    public Thread getHilo(){
-        return hiloConexión;
-    }
+    public String getCamello2(){return camello2;}
+    public String getCamello3(){return camello3;}
+    public String getNombreCliente(){return nombreCliente;}
+    public InetAddress getInetAddress(){ return grupo;}
+    public MulticastSocket getMS(){return ms;}
+    public Thread getHilo(){return hiloConexión;}
 
     public void joinMulticast(){
         try {
@@ -55,8 +62,18 @@ public class Cliente extends Componente implements Runnable{
         }
     }
 
+    public void leaveMulticast(){
+        try {
+            SocketAddress sa = new InetSocketAddress(grupo, puertoUDP);
+            NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getLocalHost());
+            ms.leaveGroup(sa, ni); //Salirse del Multicast
+            System.out.println("Desconectado del Multicast");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     /**************************************** Ejecutables ***************************************/
-    public static void main(String[] args){
+    public static void main(String args){
         try {
             //Conectando con el Servidor (TCP)
             Socket cliente = new Socket(conexionTCP,puertoTCP);
@@ -70,16 +87,17 @@ public class Cliente extends Componente implements Runnable{
 
             //Mandar OK
             ListoJoinMulticast ready = new ListoJoinMulticast();
-            ready.setData("200");
+            ready.setData(args);
             enviarPaqueteTCP(ready);
 
             closeStream();
             cliente.close(); //Cierra la TCP
 
             //A partir de aquí hay que administrar la carrera
-            Cliente camello = new Cliente(IPMulti);
+            Cliente camello = new Cliente(IPMulti, args);
             camello.joinMulticast();
             camello.getHilo().start();
+            CarreraCamellosController.setCliente(camello);
             Application.launch(StartApplication.class, args); //Metodo que lanza el JavaFX
         } catch (IOException e) {
             System.out.println("Servidor Cerrado (Esto es cliente)"); //El cliente no se puede conectar
@@ -91,39 +109,37 @@ public class Cliente extends Componente implements Runnable{
     public void run() {
         //Esperar el listo del servidor con el boton en "no pulsable"
         //El server envia un mensaje de cambio el boton a pulsable
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("pantallas/carreraCamellosUI.fxml"));
+        CarreraCamellosController controller = fxmlLoader.getController();
+        Mensaje msg;
 
         try {
-            InicioCarrera ready = (InicioCarrera) recibirPaqueteUDP(ms); //Esta recepcion tiene que cambiar el boton a activo
+            InicioCarrera ready = (InicioCarrera) recibirPaqueteUDP(ms);
             System.out.println(ready.getData());
+
+            //Aquí añadir a sus sitios los otros camellos (Hacer un método que ponga los camellos en sus nodos)
+
+            controller.butonON(); //Pone el boton en OK
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Paquete inicio carrera no recibido");
         }
 
         boolean salida = false;
         while (!salida){
-            /*try {
-                PosicionCamello movimiento = (PosicionCamello) recibirPaqueteUDP(ms);
-                if (movimiento.getCamello().equals(camello1)){
-                    posicionCamello1+=Integer.parseInt(movimiento.getData());
-                    //modificar en la UI
-                } else if(movimiento.getCamello().equals(camello2)){
-                    posicionCamello2+=Integer.parseInt(movimiento.getData());
-                    //modificar en la UI
-                } else if(movimiento.getCamello().equals(camello3)){
-                    posicionCamello3+=Integer.parseInt(movimiento.getData());
-                    //modificar en la UI
+            try {
+                msg = recibirPaqueteUDP(ms);
+                if (msg instanceof PosicionCamello){
+                    controller.escuchaMovimientoMulticast(msg);
+                } else if (msg instanceof Victoria) {
+                    controller.victoria(msg);
+                    salida = true;
                 }
-
-                //SI DAN CLICK AL BOTON ENVIAR
-                PosicionCamello move = new PosicionCamello();
-                move.setCamello("pito");
-                move.setData("2");
-                envioPaqueteUDP(move, ms, grupo);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }*/
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println();
+            }
         }
+
+        leaveMulticast();
+        System.out.println("Final de la Carrera y Programa");
     }
 }
