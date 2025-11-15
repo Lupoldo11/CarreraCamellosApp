@@ -21,12 +21,8 @@ public class Cliente extends Componente implements Runnable{
     private InetAddress grupo;
     private int puertoUDP;
     private Thread hiloConexión;
-    private String nombreCliente;
+    private String nombreCliente; //nombreCliente == camello1
 
-    private int posicionCamello1;
-    private int posicionCamello2;
-    private int posicionCamello3;
-    private String camello1;
     private String camello2;
     private String camello3;
 
@@ -46,6 +42,19 @@ public class Cliente extends Componente implements Runnable{
     public InetAddress getInetAddress(){ return grupo;}
     public MulticastSocket getMS(){return ms;}
     public Thread getHilo(){return hiloConexión;}
+
+    public void asignarCamellos(String[] camellos){
+        if (camellos[0].equals(nombreCliente)){
+            camello2 = camellos[1];
+            camello3 = camellos[2];
+        } else if (camellos[1].equals(nombreCliente)){
+            camello2 = camellos[0];
+            camello3 = camellos[2];
+        } else {
+            camello2 = camellos[0];
+            camello3 = camellos[1];
+        }
+    }
 
     public void joinMulticast(){
         try {
@@ -100,15 +109,13 @@ public class Cliente extends Componente implements Runnable{
             CarreraCamellosController.setCliente(camello);
             Application.launch(StartApplication.class, args); //Metodo que lanza el JavaFX
         } catch (IOException e) {
-            System.out.println("Servidor Cerrado (Esto es cliente)"); //El cliente no se puede conectar
+            System.out.println("Servidor Cerrado (Esto es cliente)");
         }
     }
 
     /**************************************** Hilo ***************************************/
     @Override
     public void run() {
-        //Esperar el listo del servidor con el boton en "no pulsable"
-        //El server envia un mensaje de cambio el boton a pulsable
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("pantallas/carreraCamellosUI.fxml"));
         CarreraCamellosController controller = fxmlLoader.getController();
         Mensaje msg;
@@ -117,7 +124,7 @@ public class Cliente extends Componente implements Runnable{
             InicioCarrera ready = (InicioCarrera) recibirPaqueteUDP(ms);
             System.out.println(ready.getData());
 
-            //Aquí añadir a sus sitios los otros camellos (Hacer un método que ponga los camellos en sus nodos)
+            asignarCamellos(ready.getCamellos());
 
             controller.butonON(); //Pone el boton en OK
         } catch (IOException | ClassNotFoundException e) {
@@ -133,9 +140,12 @@ public class Cliente extends Componente implements Runnable{
                 } else if (msg instanceof Victoria) {
                     controller.victoria(msg);
                     salida = true;
+                    Thread.sleep(4000);
                 }
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println();
+            } catch (InterruptedException e) {
+                System.out.println("Error en el sleep hilo");
             }
         }
 

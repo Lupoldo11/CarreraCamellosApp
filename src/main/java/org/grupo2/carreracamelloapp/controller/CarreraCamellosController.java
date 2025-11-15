@@ -12,10 +12,13 @@ import org.grupo2.carreracamelloapp.model.mensajes.Victoria;
 
 public class CarreraCamellosController {
 
+    /******************************* Guardado Cliente *********************************************/
     private static Cliente camello;
     public static void setCliente(Cliente cliente) {
         camello = cliente;
     }
+
+    /******************************* Atributos del UI *********************************************/
     @FXML
     private Button iniciarCarreraButton;
 
@@ -31,6 +34,7 @@ public class CarreraCamellosController {
     @FXML
     private ImageView camello3;
 
+    /******************************* Metodos UI (Controller) *********************************************/
     @FXML
     protected void onIniciarCarreraClick(ActionEvent event) {
         PosicionCamello moviento = new PosicionCamello();
@@ -46,6 +50,7 @@ public class CarreraCamellosController {
         winnerLabel.setText("El ganador de la carrera es: " + ganador);
     }
 
+    //Mover camellos
     protected void escuchaMoverCamellos(Mensaje msg){
         PosicionCamello moviento = (PosicionCamello) msg;
         if (moviento.getCamello().equals(camello.getCamello2())){
@@ -55,18 +60,20 @@ public class CarreraCamellosController {
         }
     }
 
+    /******************************* Metodos Acceso Exterior *********************************************/
+    //Mensaje Victoria
     public void victoria(Mensaje msg){
         Victoria winner = (Victoria) msg;
         mostrarWinner(winner.getData());
     }
 
+    //Para enviar el movimiento desde fuera
     public void escuchaMovimientoMulticast(Mensaje msg){
         escuchaMoverCamellos(msg);
     }
 
+    //Habilitar el boton
     public void butonON(){
         iniciarCarreraButton.setDisable(false);
     }
-
-    //Metodo lanza mensaje victoria
 }

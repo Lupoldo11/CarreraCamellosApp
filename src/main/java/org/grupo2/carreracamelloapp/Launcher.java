@@ -1,10 +1,8 @@
 package org.grupo2.carreracamelloapp;
 
-import javafx.application.Application;
 import org.grupo2.carreracamelloapp.model.Cliente;
 import org.grupo2.carreracamelloapp.model.Servidor;
 
-import java.net.Socket;
 import java.util.Scanner;
 
 public class Launcher {
