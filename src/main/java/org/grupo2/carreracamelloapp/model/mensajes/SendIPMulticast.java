@@ -2,7 +2,7 @@ package org.grupo2.carreracamelloapp.model.mensajes;
 
 import java.io.Serializable;
 
-public class SendIPMulticast implements Mensaje, Serializable {
+public class SendIPMulticast extends Mensaje {
     //Atributos
     private String IPMulti; //TIPO: 230.0.0.1,54321 (IP , puertoUDP)
 

@@ -2,7 +2,7 @@ package org.grupo2.carreracamelloapp.model.mensajes;
 
 import java.io.Serializable;
 
-public class PosicionCamello implements Mensaje, Serializable {
+public class PosicionCamello extends Mensaje {
     private String movimiento;
     private String camello;
 

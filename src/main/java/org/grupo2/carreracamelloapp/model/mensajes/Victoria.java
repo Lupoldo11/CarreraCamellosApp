@@ -2,7 +2,7 @@ package org.grupo2.carreracamelloapp.model.mensajes;
 
 import java.io.Serializable;
 
-public class Victoria implements Mensaje, Serializable {
+public class Victoria extends Mensaje{
     private String finalizacion="";
     @Override
     public String getData() {

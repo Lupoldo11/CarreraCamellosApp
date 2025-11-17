@@ -2,7 +2,7 @@ package org.grupo2.carreracamelloapp.model.mensajes;
 
 import java.io.Serializable;
 
-public class ListoJoinMulticast implements Mensaje, Serializable {
+public class ListoJoinMulticast extends Mensaje{
     private String nombre;
 
     @Override

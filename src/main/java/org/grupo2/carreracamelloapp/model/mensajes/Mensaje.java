@@ -2,7 +2,9 @@ package org.grupo2.carreracamelloapp.model.mensajes;
 
 import java.io.Serializable;
 
-public interface Mensaje extends Serializable {
-    public String getData();
-    public void setData(String mensaje);
+public class Mensaje implements Serializable {
+    public String getData(){
+        return "";
+    };
+    public void setData(String mensaje){};
 }

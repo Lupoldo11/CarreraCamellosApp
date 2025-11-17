@@ -2,7 +2,7 @@ package org.grupo2.carreracamelloapp.model.mensajes;
 
 import java.io.Serializable;
 
-public class InicioCarrera implements Mensaje, Serializable {
+public class InicioCarrera extends Mensaje {
     private String[] camellos;
     private String inicio="";
     @Override

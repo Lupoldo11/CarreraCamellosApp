@@ -13,7 +13,7 @@ public class Cliente extends Componente implements Runnable{
     /******************************* Atributos Static *********************************************/
     //Conexion TCP
     public static int puertoTCP = 12345;
-    public static String conexionTCP = "localhost"; //cambiar por IP del ordenador en la red WEDU
+    public static String conexionTCP = "10.102.189.212"; //cambiar por IP del ordenador en la red WEDU o localhost
 
     /******************************* Atributos Clase *********************************************/
     private String ipMulti;
