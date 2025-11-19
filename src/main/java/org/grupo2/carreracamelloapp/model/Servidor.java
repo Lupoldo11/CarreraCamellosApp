@@ -122,6 +122,12 @@ public class Servidor extends Componente implements Runnable{
         inicio.setData("inicio");
         envioPaqueteUDP(inicio, ms, grupo);
 
+
+        try {
+            recibirPaqueteUDP(ms);
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error recibir inicio");
+        }
         //Aquí se administra toda la carrera
         Mensaje posicion;
         String ganador = "";
