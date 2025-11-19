@@ -76,8 +76,7 @@ public class Servidor extends Componente implements Runnable{
     public static void main(String[] args){
         //Conexión TCP
         try {
-            InetAddress ipTCP = InetAddress.getByName("10.102.189.254");
-            //IP clase: 192.168.13.1
+            //IP clase: 192.168.113.1
             ServerSocket servidor = new ServerSocket(puertoTCP,4); //Crea el servidor de Clientes
 
             System.out.println("Esperando conexión...");
@@ -128,6 +127,7 @@ public class Servidor extends Componente implements Runnable{
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error recibir inicio");
         }
+
         //Aquí se administra toda la carrera
         Mensaje posicion;
         String ganador = "";

@@ -39,6 +39,7 @@ public class Componente {
         Mensaje msg=null;
         while (msg == null){
             msg = (Mensaje) ois.readObject();
+            System.out.println(msg.getData());
         }
         ois.close();
         in.close();
