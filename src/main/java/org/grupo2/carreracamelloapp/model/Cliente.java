@@ -121,7 +121,7 @@ public class Cliente extends Componente implements Runnable{
         Mensaje msg;
 
         try {
-            Mensaje ready = recibirPaqueteUDP(ms);
+            Mensaje ready = recibirPaqueteUDP(ms); //cliente se queda aquí
             System.out.println(ready.getData());
 
             asignarCamellos(ready.getCamellos());
