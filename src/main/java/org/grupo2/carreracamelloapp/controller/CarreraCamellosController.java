@@ -7,8 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import org.grupo2.carreracamelloapp.model.Cliente;
 import org.grupo2.carreracamelloapp.model.mensajes.Mensaje;
-import org.grupo2.carreracamelloapp.model.mensajes.PosicionCamello;
-import org.grupo2.carreracamelloapp.model.mensajes.Victoria;
 
 public class CarreraCamellosController {
 
@@ -37,7 +35,7 @@ public class CarreraCamellosController {
     /******************************* Metodos UI (Controller) *********************************************/
     @FXML
     protected void onIniciarCarreraClick(ActionEvent event) {
-        PosicionCamello moviento = new PosicionCamello();
+        Mensaje moviento = new Mensaje();
         moviento.setCamello(camello.getNombreCliente());
         int numMovimiento = camello.movimientoRandom();
         moviento.setData(String.valueOf(numMovimiento));
@@ -52,7 +50,7 @@ public class CarreraCamellosController {
 
     //Mover camellos
     protected void escuchaMoverCamellos(Mensaje msg){
-        PosicionCamello moviento = (PosicionCamello) msg;
+        Mensaje moviento = msg;
         if (moviento.getCamello().equals(camello.getCamello2())){
             camello2.setLayoutX(camello2.getLayoutX() + Integer.parseInt(moviento.getData()));
         } else if (moviento.getCamello().equals(camello.getCamello3())){
@@ -63,7 +61,7 @@ public class CarreraCamellosController {
     /******************************* Metodos Acceso Exterior *********************************************/
     //Mensaje Victoria
     public void victoria(Mensaje msg){
-        Victoria winner = (Victoria) msg;
+        Mensaje winner =  msg;
         mostrarWinner(winner.getData());
     }
 
