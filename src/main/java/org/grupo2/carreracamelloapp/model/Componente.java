@@ -31,10 +31,11 @@ public class Componente {
         DatagramPacket recibo = new DatagramPacket(recibido, recibido.length);
         ms.receive(recibo);
 
-        ByteArrayInputStream in = new ByteArrayInputStream(recibido);
+        ByteArrayInputStream in = new ByteArrayInputStream(recibido); // 0, getLength() [probar]
         ObjectInputStream ois = new ObjectInputStream(in);
         System.out.println("Antes del cash");
-        Mensaje msg = (Mensaje) ois.readObject();
+        Mensaje msg = (Mensaje) ois.readObject(); //Rompe aquí porque creo que revienta
+
         ois.close();
         in.close();
 

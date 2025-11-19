@@ -121,7 +121,7 @@ public class Cliente extends Componente implements Runnable{
         Mensaje msg;
 
         try {
-            InicioCarrera ready = (InicioCarrera) recibirPaqueteUDP(ms);
+            Mensaje ready = recibirPaqueteUDP(ms);
             System.out.println(ready.getData());
 
             asignarCamellos(ready.getCamellos());
@@ -135,12 +135,12 @@ public class Cliente extends Componente implements Runnable{
         while (!salida){
             try {
                 msg = recibirPaqueteUDP(ms);
-                if (msg instanceof PosicionCamello){
-                    controller.escuchaMovimientoMulticast(msg);
-                } else if (msg instanceof Victoria) {
+                if (msg.getData().equals("victoria")){
                     controller.victoria(msg);
                     salida = true;
                     Thread.sleep(4000);
+                } else  {
+                    controller.escuchaMovimientoMulticast(msg);
                 }
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println();

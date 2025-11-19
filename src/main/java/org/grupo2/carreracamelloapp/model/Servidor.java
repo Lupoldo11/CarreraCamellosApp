@@ -117,17 +117,18 @@ public class Servidor extends Componente implements Runnable{
     @Override
     public void run() {
         //Enviar Inicio Carrera -> Clientes
-        InicioCarrera ready = new InicioCarrera();
-        ready.setCamellos(camellos);
-        envioPaqueteUDP(ready, ms, grupo);
+        Mensaje inicio = new Mensaje();
+        inicio.setCamellos(camellos);
+        inicio.setData("inicio");
+        envioPaqueteUDP(inicio, ms, grupo);
 
         //Aquí se administra toda la carrera
-        PosicionCamello posicion;
+        Mensaje posicion;
         String ganador = "";
         boolean salida = false;
         while (!salida){
             try {
-                posicion = (PosicionCamello) recibirPaqueteUDP(ms);
+                posicion = recibirPaqueteUDP(ms);
                 if (posicionCamello1 <= posicionMeta && posicionCamello2 <= posicionMeta
                         && posicionCamello3 <= posicionMeta){
                     if (posicion.getCamello().equals(camellos[0])){
@@ -152,7 +153,7 @@ public class Servidor extends Componente implements Runnable{
             }
         }
 
-        Victoria victoria = new Victoria();
+        Mensaje victoria = new Mensaje();
         victoria.setData(ganador);
         envioPaqueteUDP(victoria, ms, grupo);
 
