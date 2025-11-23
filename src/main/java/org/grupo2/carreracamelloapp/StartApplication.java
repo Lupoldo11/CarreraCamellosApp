@@ -14,7 +14,7 @@ public class StartApplication extends Application {
     private static Cliente camello;
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws IOException { //Lanzar UI
         FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("pantallas/carreraCamellosUI.fxml"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root, 967, 606);

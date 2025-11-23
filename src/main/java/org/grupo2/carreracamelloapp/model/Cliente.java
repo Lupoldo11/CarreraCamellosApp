@@ -148,7 +148,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
 
             StartApplication.getCliente(camello);
             //Metodo que lanza el JavaFX
-            Application.launch(StartApplication.class, nombreCliente);
+            Application.launch(StartApplication.class, nombreCliente); //Lanza la UI
         } catch (IOException e) {
             System.out.println("[Error] Servidor Cerrado (Esto es cliente)");
         }

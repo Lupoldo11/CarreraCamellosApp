@@ -24,9 +24,6 @@ public class CarreraCamellosController {
     private Button iniciarCarreraButton;
 
     @FXML
-    private Text winnerLabel;
-
-    @FXML
     private ImageView camello1;
 
     @FXML
@@ -38,24 +35,23 @@ public class CarreraCamellosController {
     /******************************* Metodos UI (Controller) *********************************************/
     @FXML
     protected void onIniciarCarreraClick(ActionEvent event) {
+        //Escucha del boton UI
         EventPosicion moviento = new EventPosicion(camello.getNombreCliente(), camello.movimientoRandom());
         camello.envioPaqueteUDP(moviento, camello.getMS(), camello.getInetAddress());
-    }
-
-    @FXML
-    protected void mostrarWinner(String ganador) {
-        winnerLabel.setText("[Controller] El ganador de la carrera es: " + ganador);
     }
 
     //Mover camellos
     protected void escuchaMoverCamellos(EventPosicion eventPosicion){
         if (eventPosicion.getPropietario().equals(listCamellos[0].getNombreCliente())){
+            //mover el camello de lugar UI
             camello1.setLayoutX(camello1.getLayoutX() + eventPosicion.getMovimiento());
             System.out.println("[Controller] "+eventPosicion.getPropietario()+" se movió "+eventPosicion.getMovimiento());
         } else if (eventPosicion.getPropietario().equals(listCamellos[1].getNombreCliente())){
+            //mover el camello de lugar UI
             camello2.setLayoutX(camello2.getLayoutX() + eventPosicion.getMovimiento());
             System.out.println("[Controller] "+eventPosicion.getPropietario()+" se movió "+eventPosicion.getMovimiento());
         } else if (eventPosicion.getPropietario().equals(listCamellos[2].getNombreCliente())){
+            //mover el camello de lugar UI
             camello3.setLayoutX(camello3.getLayoutX() + eventPosicion.getMovimiento());
             System.out.println("[Controller] "+eventPosicion.getPropietario()+" se movió "+eventPosicion.getMovimiento());
         } else {
@@ -71,6 +67,7 @@ public class CarreraCamellosController {
 
     //Habilitar el boton
     public void butonON(){
+        //Activar el boton  UI
         iniciarCarreraButton.setVisible(true);
         System.out.println("[Controller] Cambiado de estado el boton a visible..");
     }

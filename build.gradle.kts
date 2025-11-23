@@ -27,7 +27,7 @@ tasks.withType<JavaCompile> {
 
 application {
     mainModule.set("org.grupo2.carreracamelloapp")
-    mainClass.set("org.grupo2.carreracamelloapp.StartApplication") //Arreglar esta mierda
+    mainClass.set("org.grupo2.carreracamelloapp.Launcher") //Arreglar esta mierda
 }
 
 javafx {
@@ -50,4 +50,11 @@ jlink {
     launcher {
         name = "app"
     }
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "org.grupo2.carreracamelloapp.Launcher"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
