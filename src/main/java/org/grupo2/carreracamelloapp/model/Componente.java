@@ -21,7 +21,7 @@ public class Componente {
             DatagramPacket paqueteEnvio = new DatagramPacket(mensaje, mensaje.length, grupo, ms.getLocalPort());
             ms.send(paqueteEnvio);
         } catch (IOException e) {
-            System.out.println("Error al enviar paquete");
+            System.out.println("[Error] Envio paquete no realizado");
         }
     }
 
@@ -31,15 +31,12 @@ public class Componente {
         DatagramPacket recibo = new DatagramPacket(recibido, recibido.length);
         ms.receive(recibo);
 
-        ByteArrayInputStream in = new ByteArrayInputStream(recibido); // 0, getLength() [probar]
+        ByteArrayInputStream in = new ByteArrayInputStream(recibido);
         ObjectInputStream ois = new ObjectInputStream(in);
-        System.out.println("Antes del cash");
-        //Rompe aquí porque creo que revienta
 
         Mensaje msg=null;
         while (msg == null){
             msg = (Mensaje) ois.readObject();
-            System.out.println(msg.getData());
         }
         ois.close();
         in.close();
@@ -56,7 +53,7 @@ public class Componente {
             out = new ObjectOutputStream (cliente.getOutputStream());
             in = new ObjectInputStream(cliente.getInputStream());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("[Error] No se han podido crear los Streams");
         }
     }
 
@@ -65,7 +62,7 @@ public class Componente {
             out.close();
             in.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("[Error] No se han podido cerrar los Streams");
         }
     }
 
@@ -88,9 +85,9 @@ public class Componente {
             return msg;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[Error] No ha sido posible recibir paquete");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("[Error] El cash no ha podido realizarse");
         }
 
         return msg;

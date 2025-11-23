@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="606.0" prefWidth="967.0" style="-fx-background-color: White;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.grupo2.carreracamelloapp.controller.CarreraCamellosController">
+<StackPane prefHeight="606.0" prefWidth="967.0" style="-fx-background-color: White;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.grupo2.carreracamelloapp.controller.CarreraCamellosController">
     <!-- Layout base en VBox (igual que antes) -->
     <VBox alignment="CENTER" prefHeight="606.0" prefWidth="967.0" spacing="20.0">
         <padding>
@@ -46,7 +46,7 @@
                 </Text>
             </children>
         </HBox>
-        <Button fx:id="iniciarCarreraButton" disable="true" onAction="#onIniciarCarreraClick" prefWidth="158.0" text="Iniciar carrera">
+        <Button fx:id="iniciarCarreraButton" onAction="#onIniciarCarreraClick" prefWidth="158.0" text="Iniciar carrera">
             <font>
                 <Font name="Arial" size="14.0" />
             </font>
