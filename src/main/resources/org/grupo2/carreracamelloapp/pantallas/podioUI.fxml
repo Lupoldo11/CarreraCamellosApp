@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.grupo2.carreracamelloapp.controller.PodioController">
+   <children>
+      <Label fx:id="bronze" layoutX="406.0" layoutY="154.0" text="Label" />
+      <Label fx:id="gold" layoutX="286.0" layoutY="89.0" text="Label" />
+      <Label fx:id="silver" layoutX="178.0" layoutY="132.0" text="Label" />
+      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="320.0" layoutY="163.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@camelloImageUI.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="200.0" layoutY="89.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@camelloImageUI.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="100.0" layoutY="141.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@camelloImageUI.png" />
+         </image>
+      </ImageView>
+      <AnchorPane layoutX="246.0" layoutY="177.0" prefHeight="229.0" prefWidth="108.0" style="-fx-background-color: gold;" />
+      <AnchorPane layoutX="138.0" layoutY="225.0" prefHeight="181.0" prefWidth="108.0" style="-fx-background-color: silver;" />
+      <AnchorPane layoutX="354.0" layoutY="252.0" prefHeight="155.0" prefWidth="108.0" style="-fx-background-color: #CD7F32;" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="178.0" layoutY="14.0" prefHeight="47.0" prefWidth="243.0" text="Podio">
+         <font>
+            <Font size="41.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

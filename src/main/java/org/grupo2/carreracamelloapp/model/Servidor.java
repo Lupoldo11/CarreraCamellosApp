@@ -20,7 +20,7 @@ public class Servidor extends Componente implements Runnable{
     private InetAddress grupo;
     private AsignacionGrupo datosGrupo;
 
-    private final int posicionMeta = 200;
+    private final int posicionMeta = 780;
     private Cliente[] camellos;
 
     /**************************************** Constructor ***************************************/

@@ -1,13 +1,19 @@
 package org.grupo2.carreracamelloapp.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import org.grupo2.carreracamelloapp.StartApplication;
 import org.grupo2.carreracamelloapp.model.Cliente;
-import org.grupo2.carreracamelloapp.model.mensajes.EventFinalizacion;
 import org.grupo2.carreracamelloapp.model.mensajes.EventPosicion;
+
+import java.io.IOException;
 
 public class CarreraCamellosController {
 
@@ -62,13 +68,40 @@ public class CarreraCamellosController {
     /******************************* Metodos Acceso Exterior *********************************************/
     //Para enviar el movimiento desde fuera
     public void escuchaMovimientoMulticast(EventPosicion eventPosicion){
-        escuchaMoverCamellos(eventPosicion);
+        Platform.runLater(() -> {
+            escuchaMoverCamellos(eventPosicion);
+        });
     }
 
     //Habilitar el boton
     public void butonON(){
-        //Activar el boton  UI
-        iniciarCarreraButton.setVisible(true);
-        System.out.println("[Controller] Cambiado de estado el boton a visible..");
+        Platform.runLater(() -> {
+            //Activar el boton  UI
+            iniciarCarreraButton.setDisable(false);
+            System.out.println("[Controller] Cambiado de estado el boton a activado");
+        });
+    }
+
+    public void butonOFF(){
+        Platform.runLater(() -> {
+            iniciarCarreraButton.setDisable(true);
+            System.out.println("[Controller] Cambiado de estado el boton a desactivado");
+            /*try {
+                podio();
+            } catch (IOException e) {
+                System.out.println("[Controller] Ventana no disponible");
+            }*/
+        });
+    }
+
+    public void podio() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(PodioController.class.getResource("pantallas/podioUI.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = new Stage();
+        Scene scene = new Scene(root, 400, 400);
+        stage.setTitle("Podio");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
     }
 }

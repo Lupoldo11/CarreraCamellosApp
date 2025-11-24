@@ -1,6 +1,7 @@
 package org.grupo2.carreracamelloapp.model;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.grupo2.carreracamelloapp.StartApplication;
@@ -180,12 +181,16 @@ public class Cliente extends Componente implements Runnable,Serializable{
 
     public void cicloCarrera() {
         boolean salida = true;
-        this.controller.butonON();
         Mensaje mensaje;
         while (salida) {
             try {
                 mensaje = recibirPaqueteUDP(ms);
                 if (mensaje instanceof EventInicio) {
+                    if (this.controller == null){
+                        System.out.println("[Controller] Controlador no cargado, está en null");
+                    } else {
+                        this.controller.butonON();
+                    }
                     System.out.println("[Carrera] La carrera da comienzo YA!!");
                     asignarCamellos(EventInicio.parseEventInicio(mensaje));
                 } else if (mensaje instanceof EventPosicion) {
@@ -193,6 +198,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
                     this.controller.escuchaMovimientoMulticast(EventPosicion.parseEventPosicion(mensaje));
                 } else if (mensaje instanceof EventFinalizacion) {
                     System.out.println("[Carrera] Fin!!");
+                    this.controller.butonOFF();
                     salida = victoria(EventFinalizacion.parseEventFinalizacion(mensaje));
                     //aqui hacer que el controller saque un podio
                 } else {
@@ -214,14 +220,12 @@ public class Cliente extends Componente implements Runnable,Serializable{
         for (int i = 0; i < podio.length; i++) {
             System.out.println("[Carrera] Posiciones " + (i + 1) + ": " + podio[i].getNombreCliente());
         }
+        //Lanzar la UI Podio
         return false;
     }
 
     @Override
     public void run() {
-        //generar controller
-        setController(Cliente.generateController());
-
         //lanza el bucle
         cicloCarrera();
     }

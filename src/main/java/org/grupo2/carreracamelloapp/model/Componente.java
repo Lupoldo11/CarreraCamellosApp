@@ -94,8 +94,8 @@ public class Componente {
     }
 
     /************************************* Movimiento Camellos ***********************************/
-    public int max =3; //movimiento maximo
-    public int min =1; //movimiento mínimo
+    public int max = 10; //movimiento maximo
+    public int min = 5; //movimiento mínimo
     public int movimientoRandom(){
         return (int) (Math.random() * (max - min + 1)) + min;
     }

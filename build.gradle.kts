@@ -27,7 +27,7 @@ tasks.withType<JavaCompile> {
 
 application {
     mainModule.set("org.grupo2.carreracamelloapp")
-    mainClass.set("org.grupo2.carreracamelloapp.Launcher") //Arreglar esta mierda
+    mainClass.set("org.grupo2.carreracamelloapp.StartApplication") //Arreglar esta mierda
 }
 
 javafx {

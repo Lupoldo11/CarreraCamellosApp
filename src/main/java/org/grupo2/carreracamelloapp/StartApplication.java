@@ -5,7 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.grupo2.carreracamelloapp.controller.CarreraCamellosController;
 import org.grupo2.carreracamelloapp.model.Cliente;
+import org.grupo2.carreracamelloapp.model.mensajes.AsignacionGrupo;
 
 import java.io.IOException;
 
@@ -17,6 +19,10 @@ public class StartApplication extends Application {
     public void start(Stage primaryStage) throws IOException { //Lanzar UI
         FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("pantallas/carreraCamellosUI.fxml"));
         Parent root = fxmlLoader.load();
+
+        CarreraCamellosController controller = fxmlLoader.getController();
+        camello.setController(controller);
+
         Scene scene = new Scene(root, 967, 606);
         primaryStage.setTitle("Carrera de camellos!");
         primaryStage.setScene(scene);

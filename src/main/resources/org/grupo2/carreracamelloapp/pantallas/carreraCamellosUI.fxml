@@ -46,7 +46,7 @@
                 </Text>
             </children>
         </HBox>
-        <Button fx:id="iniciarCarreraButton" onAction="#onIniciarCarreraClick" prefWidth="158.0" text="Iniciar carrera">
+        <Button fx:id="iniciarCarreraButton" disable="true" onAction="#onIniciarCarreraClick" prefWidth="158.0" text="Iniciar carrera">
             <font>
                 <Font name="Arial" size="14.0" />
             </font>
