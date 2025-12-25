@@ -140,22 +140,31 @@ public class ProtocoloInternetv4 {
     }
     
     public static NetworkInterface getIPv4Network(){
-        NetworkInterface network = null;
-        boolean salida = true;
-
         try {
             Enumeration<NetworkInterface> listNetworks = NetworkInterface.getNetworkInterfaces();
-            while(listNetworks.hasMoreElements() && salida){
+            while(listNetworks.hasMoreElements()){
                 NetworkInterface prueba = listNetworks.nextElement();
-                if(prueba.isUp() && !prueba.isVirtual() && prueba.supportsMulticast()){
-                    network = prueba;
+                // 🔥 PRIORIDAD: WiFi/Ethernet REAL (nombre contiene "wlan", "WiFi", "Ethernet")
+                if(prueba.isUp() && !prueba.isLoopback() && !prueba.isVirtual() &&
+                        (prueba.getDisplayName().toLowerCase().contains("wlan") ||
+                                prueba.getDisplayName().toLowerCase().contains("wifi") ||
+                                prueba.getDisplayName().toLowerCase().contains("ethernet"))){
+
+                    System.out.println("🔍 INTERFAZ ELEGIDA: " + prueba.getDisplayName());
+                    Enumeration<InetAddress> ips = prueba.getInetAddresses();
+                    while(ips.hasMoreElements()){
+                        InetAddress ip = ips.nextElement();
+                        if(ip instanceof Inet4Address && !ip.isLoopbackAddress()){
+                            System.out.println("   → IP LAN: " + ip.getHostAddress());
+                        }
+                    }
+                    networkInterface = prueba;
+                    return prueba;
                 }
             }
-
         } catch (SocketException e) {
-            System.out.println("[Error] No se ha podido encontrar la IPv4 de eth0");
+            System.out.println("[Error] No se ha podido encontrar interfaz LAN");
         }
-        networkInterface= network;
-        return network;
+        return null;  // Falla si no encuentra WiFi/Ethernet
     }
 }
