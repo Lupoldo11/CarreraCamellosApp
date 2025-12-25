@@ -144,27 +144,25 @@ public class ProtocoloInternetv4 {
             Enumeration<NetworkInterface> listNetworks = NetworkInterface.getNetworkInterfaces();
             while(listNetworks.hasMoreElements()){
                 NetworkInterface prueba = listNetworks.nextElement();
-                // 🔥 PRIORIDAD: WiFi/Ethernet REAL (nombre contiene "wlan", "WiFi", "Ethernet")
-                if(prueba.isUp() && !prueba.isLoopback() && !prueba.isVirtual() &&
-                        (prueba.getDisplayName().toLowerCase().contains("wlan") ||
-                                prueba.getDisplayName().toLowerCase().contains("wifi") ||
-                                prueba.getDisplayName().toLowerCase().contains("ethernet"))){
 
-                    System.out.println("🔍 INTERFAZ ELEGIDA: " + prueba.getDisplayName());
-                    Enumeration<InetAddress> ips = prueba.getInetAddresses();
-                    while(ips.hasMoreElements()){
-                        InetAddress ip = ips.nextElement();
-                        if(ip instanceof Inet4Address && !ip.isLoopbackAddress()){
-                            System.out.println("   → IP LAN: " + ip.getHostAddress());
-                        }
+                // 🔥 FUERZA WiFi real (192.168.1.X)
+                Enumeration<InetAddress> ips = prueba.getInetAddresses();
+                while(ips.hasMoreElements()){
+                    InetAddress ip = ips.nextElement();
+                    if(ip instanceof Inet4Address &&
+                            ip.getHostAddress().startsWith("192.168.1.") &&  // ← LAN real
+                            !ip.isLoopbackAddress()){
+
+                        System.out.println("🔥 WIFI REAL: " + prueba.getDisplayName());
+                        System.out.println("   → IP CORRECTA: " + ip.getHostAddress());
+                        networkInterface = prueba;
+                        return prueba;
                     }
-                    networkInterface = prueba;
-                    return prueba;
                 }
             }
         } catch (SocketException e) {
-            System.out.println("[Error] No se ha podido encontrar interfaz LAN");
+            System.out.println("[Error] No WiFi encontrada");
         }
-        return null;  // Falla si no encuentra WiFi/Ethernet
+        return null;
     }
 }
