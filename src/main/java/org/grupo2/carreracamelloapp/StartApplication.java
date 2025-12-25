@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.grupo2.carreracamelloapp.controller.CarreraCamellosController;
 import org.grupo2.carreracamelloapp.model.Cliente;
-import org.grupo2.carreracamelloapp.model.mensajes.AsignacionGrupo;
 
 import java.io.IOException;
 
@@ -16,29 +15,42 @@ public class StartApplication extends Application {
     private static Cliente camello;
 
     @Override
-    public void start(Stage primaryStage) throws IOException { //Lanzar UI
-        FXMLLoader fxmlLoader = new FXMLLoader(StartApplication.class.getResource("pantallas/carreraCamellosUI.fxml"));
+    public void start(Stage primaryStage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                StartApplication.class.getResource("pantallas/carreraCamellosUI.fxml")
+        );
         Parent root = fxmlLoader.load();
 
         CarreraCamellosController controller = fxmlLoader.getController();
+
+        // Vincular cliente ↔ controller
         camello.setController(controller);
+        // Si tu controller tiene setCliente, mejor también:
+        // controller.setCliente(camello);
+
+        // Unirse al multicast AHORA que ya hay controller
+        camello.joinMulticast();
+
+        // Lanzar el hilo que ejecuta cicloCarrera()
+        hiloControlCarrera = new Thread(camello);
+        hiloControlCarrera.start();
+        System.out.println("[Cliente] ✅ Hilo UDP iniciado");
 
         Scene scene = new Scene(root, 967, 606);
         primaryStage.setTitle("Carrera de camellos!");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
-
-        hiloControlCarrera = new Thread(camello);
-        hiloControlCarrera.start();
     }
 
     @Override
-    public void stop(){
-        hiloControlCarrera.interrupt();
+    public void stop() {
+        if (hiloControlCarrera != null && hiloControlCarrera.isAlive()) {
+            hiloControlCarrera.interrupt();
+        }
     }
 
-    public static void getCliente(Cliente cliente){
-        camello=cliente;
+    public static void getCliente(Cliente cliente) {
+        camello = cliente;
     }
 }

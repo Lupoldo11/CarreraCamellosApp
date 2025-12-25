@@ -141,21 +141,10 @@ public class Cliente extends Componente implements Runnable,Serializable{
             System.out.println("[Cliente] Generando usuario...");
             Cliente camello = new Cliente(nombreCliente, datosGrupo);
 
-            //Unión a la conexión UDP
-            camello.joinMulticast(); //Unirse al grupo
-
-            Thread hiloUDP = new Thread(camello);
-            hiloUDP.start();
-            System.out.println("[Cliente] ✅ Hilo UDP iniciado");
-
-            //Ciclo Carrera
-            CarreraCamellosController.setCliente(camello);
             StartApplication.getCliente(camello);
-            Application.launch(StartApplication.class, nombreCliente); //Lanza la UI
 
-            StartApplication.getCliente(camello);
-            //Metodo que lanza el JavaFX
-            Application.launch(StartApplication.class, nombreCliente); //Lanza la UI
+            Application.launch(StartApplication.class, nombreCliente);
+
         } catch (IOException e) {
             System.out.println("[Error] Servidor Cerrado (Esto es cliente)");
         }
