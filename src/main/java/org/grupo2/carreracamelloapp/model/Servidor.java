@@ -22,6 +22,7 @@ public class Servidor extends Componente implements Runnable{
 
     private final int posicionMeta = 780;
     private Cliente[] camellos;
+    private NetworkInterface networkInterface;
 
     /**************************************** Constructor ***************************************/
     public Servidor(int contador, AsignacionGrupo datosGrupo, Cliente[] camellos){
@@ -36,10 +37,10 @@ public class Servidor extends Componente implements Runnable{
         try {
             ms = new MulticastSocket(datosGrupo.getPuertoUDP()); // -> atributo
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast()); // -> atributo
-
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
-            NetworkInterface ni = ProtocoloInternetv4.getIPv4Network();
-            ms.joinGroup(sa, ni); // Unirse al Multicast
+            networkInterface = ProtocoloInternetv4.getIPv4Network();
+
+            ms.joinGroup(sa, networkInterface); // Unirse al Multicast
         } catch (IOException e) {
             System.out.println("[Error] Error al hacer el multicast");
         }
@@ -48,8 +49,7 @@ public class Servidor extends Componente implements Runnable{
     public void leaveMulticast(){
         try {
             SocketAddress sa = new InetSocketAddress(grupo, puertoUDP);
-            NetworkInterface ni = ProtocoloInternetv4.getNetwork(); //mirar esto
-            ms.leaveGroup(sa, ni); //Salirse del Multicast
+            ms.leaveGroup(sa, networkInterface); //Salirse del Multicast
             System.out.println("[Carrera"+contador+"] Desconectado del Multicast");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -69,7 +69,7 @@ public class Servidor extends Componente implements Runnable{
         //Conexión TCP
         try {
             System.out.println("[Servidor] Servidor disponible...");
-            ServerSocket servidor = new ServerSocket(puertoTCP,4); //Crea el servidor de Clientes
+            ServerSocket servidor = new ServerSocket(puertoTCP, 50, InetAddress.getByName("0.0.0.0"));
 
             while(true){ //Espera infinita a jugadores
                 System.out.println("[Servidor] Esperando conexión...");

@@ -26,6 +26,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
     private AsignacionGrupo datosGrupo;
     private CarreraCamellosController controller;
     private StartApplication application;
+    private NetworkInterface networkInterface;
 
     private Cliente camello2;
     private Cliente camello3;
@@ -92,12 +93,12 @@ public class Cliente extends Componente implements Runnable,Serializable{
             //Inicio de conexión multicast UDP
             ms = new MulticastSocket(datosGrupo.getPuertoUDP()); //averiguar como sacarlo
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast()); //nombreIPMulticast
+            networkInterface = ProtocoloInternetv4.getIPv4Network();
 
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP()); //Prueba conectar
-            NetworkInterface ni = ProtocoloInternetv4.getIPv4Network();; //Mirar eso de aquí
             ms.setReuseAddress(true); //esto es una prueba
 
-            ms.joinGroup(sa, ni); //Se uniría
+            ms.joinGroup(sa, networkInterface); //Se uniría
             System.out.println("[Cliente] Uniendose de la conexión:" + datosGrupo.getIpV4Multicast() + " y puerto:" + datosGrupo.getPuertoUDP());
 
         } catch (IOException e) {
@@ -108,9 +109,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
     public void leaveMulticast() {
         try {
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
-            NetworkInterface ni = ProtocoloInternetv4.getNetwork(); //Tarjeta de este ordena
-
-            ms.leaveGroup(sa, ni); //Salirse del Multicast
+            ms.leaveGroup(sa, networkInterface); //Salirse del Multicast
             System.out.println("[Cliente] Desconectando de la conexión:" + datosGrupo.getIpV4Multicast() + " y puerto:" + datosGrupo.getPuertoUDP());
         } catch (IOException e) {
             System.out.println("[Error] No ha sido posible desconectase del multicast");
@@ -145,8 +144,14 @@ public class Cliente extends Componente implements Runnable,Serializable{
             //Unión a la conexión UDP
             camello.joinMulticast(); //Unirse al grupo
 
+            Thread hiloUDP = new Thread(camello);
+            hiloUDP.start();
+            System.out.println("[Cliente] ✅ Hilo UDP iniciado");
+
             //Ciclo Carrera
             CarreraCamellosController.setCliente(camello);
+            StartApplication.getCliente(camello);
+            Application.launch(StartApplication.class, nombreCliente); //Lanza la UI
 
             StartApplication.getCliente(camello);
             //Metodo que lanza el JavaFX

@@ -116,6 +116,29 @@ public class ProtocoloInternetv4 {
     public static NetworkInterface getNetwork(){
         return networkInterface;
     }
+    
+    /****** Método para obtener la IP local IPv4 dinámicamente *******/
+    public static String getLocalIPv4Address(){
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while(interfaces.hasMoreElements()){
+                NetworkInterface iface = interfaces.nextElement();
+                if(iface.isUp() && !iface.isLoopback() && !iface.isVirtual()){
+                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                    while(addresses.hasMoreElements()){
+                        InetAddress address = addresses.nextElement();
+                        if(address instanceof Inet4Address && !address.isLoopbackAddress()){
+                            return address.getHostAddress();
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            System.out.println("[Error] No se ha podido obtener la dirección IPv4 local");
+        }
+        return "127.0.0.1"; //fallback a localhost
+    }
+    
     public static NetworkInterface getIPv4Network(){
         NetworkInterface network = null;
         boolean salida = true;
