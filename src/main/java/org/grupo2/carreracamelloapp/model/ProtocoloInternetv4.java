@@ -4,6 +4,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Collection;
 import java.util.Enumeration;
 
 public class ProtocoloInternetv4 {
@@ -111,30 +112,27 @@ public class ProtocoloInternetv4 {
         return salida;
     }
 
-    public static InetAddress getIPv4Network(){
-        String interfaceName = "eth0";
-        InetAddress myIP = null;
+    private static NetworkInterface networkInterface;
+    public static NetworkInterface getNetwork(){
+        return networkInterface;
+    }
+    public static NetworkInterface getIPv4Network(){
+        NetworkInterface network = null;
+        boolean salida = true;
 
         try {
-            NetworkInterface netIf = NetworkInterface.getByName(interfaceName);
-            if (netIf == null){
-                System.out.println("[Error] No se encontró la interfaz: "+interfaceName);
-            } else {
-                Enumeration<InetAddress> addresses = netIf.getInetAddresses();
-
-                boolean salida = true;
-                while(addresses.hasMoreElements() || salida){
-                    InetAddress addr = addresses.nextElement();
-                    if(!addr.isLoopbackAddress() && addr instanceof Inet4Address){
-                        myIP = addr;
-                        salida = false;
-                    }
+            Enumeration<NetworkInterface> listNetworks = NetworkInterface.getNetworkInterfaces();
+            while(listNetworks.hasMoreElements() && salida){
+                NetworkInterface prueba = listNetworks.nextElement();
+                if(prueba.isUp() && !prueba.isVirtual() && prueba.supportsMulticast()){
+                    network = prueba;
                 }
             }
 
         } catch (SocketException e) {
             System.out.println("[Error] No se ha podido encontrar la IPv4 de eth0");
         }
-        return myIP;
+        networkInterface= network;
+        return network;
     }
 }

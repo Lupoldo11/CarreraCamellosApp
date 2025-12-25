@@ -10,6 +10,7 @@ import org.grupo2.carreracamelloapp.model.mensajes.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.Collection;
 
 public class Cliente extends Componente implements Runnable,Serializable{
     /******************************* Atributos Static *********************************************/
@@ -93,7 +94,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast()); //nombreIPMulticast
 
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP()); //Prueba conectar
-            NetworkInterface ni = NetworkInterface.getByInetAddress(InetAddress.getByName("192.168.56.1")); //Mirar eso de aquí
+            NetworkInterface ni = ProtocoloInternetv4.getIPv4Network();; //Mirar eso de aquí
             ms.setReuseAddress(true); //esto es una prueba
 
             ms.joinGroup(sa, ni); //Se uniría
@@ -107,7 +108,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
     public void leaveMulticast() {
         try {
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
-            NetworkInterface ni = NetworkInterface.getByInetAddress(ProtocoloInternetv4.getIPv4Network()); //Tarjeta de este ordena
+            NetworkInterface ni = ProtocoloInternetv4.getNetwork(); //Tarjeta de este ordena
 
             ms.leaveGroup(sa, ni); //Salirse del Multicast
             System.out.println("[Cliente] Desconectando de la conexión:" + datosGrupo.getIpV4Multicast() + " y puerto:" + datosGrupo.getPuertoUDP());
