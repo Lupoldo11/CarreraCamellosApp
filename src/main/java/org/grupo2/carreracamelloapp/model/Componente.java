@@ -10,17 +10,17 @@ public class Componente {
 
     public void envioPaqueteUDP(Mensaje objeto, MulticastSocket ms, InetAddress grupo, int puerto){
         try {
-            // ✅ AUMENTAR TTL para que los paquetes salgan de la máquina local
-            ms.setTimeToLive(255); // Máximo TTL para atravesar routers
+            // ✅ Asegurar TTL alto para cross-machine
+            if(ms.getTimeToLive() < 255) {
+                ms.setTimeToLive(255);
+            }
 
-            //Generar byte del objeto
-            ByteArrayOutputStream bs= new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream (bs);
+            ByteArrayOutputStream bs = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bs);
             out.writeObject(objeto);
             out.close();
-            byte[] mensaje= bs.toByteArray();
+            byte[] mensaje = bs.toByteArray();
 
-            //Enviar objeto
             DatagramPacket paqueteEnvio = new DatagramPacket(mensaje, mensaje.length, grupo, puerto);
             ms.send(paqueteEnvio);
 
@@ -29,6 +29,7 @@ public class Componente {
             e.printStackTrace();
         }
     }
+
 
 
     /************************************* DatagramPacket -> recibir ***********************************/

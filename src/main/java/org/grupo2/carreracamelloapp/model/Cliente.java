@@ -109,7 +109,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
     public void joinMulticast() {
         try {
             ms = new MulticastSocket(datosGrupo.getPuertoUDP());
-            ms.setReuseAddress(true); // ✅ CRÍTICO
+            ms.setReuseAddress(true);
 
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast());
             networkInterface = ProtocoloInternetv4.getIPv4Network();
@@ -117,11 +117,14 @@ public class Cliente extends Componente implements Runnable,Serializable{
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
             ms.joinGroup(sa, networkInterface);
 
-            // ✅ TAMBIÉN sin interfaz específica
-            ms.joinGroup(grupo);
+            // ❌ QUITA ESTA LÍNEA (causa el error)
+            // ms.joinGroup(grupo);
 
-            System.out.println("[Cliente] Uniendose de la conexión:" + datosGrupo.getIpV4Multicast() +
-                    " y puerto:" + datosGrupo.getPuertoUDP());
+            // ✅ AÑADIR TTL para que llegue a otras máquinas
+            ms.setTimeToLive(255);
+
+            System.out.println("[Cliente] Unido al multicast " + datosGrupo.getIpV4Multicast() +
+                    ":" + datosGrupo.getPuertoUDP());
             System.out.println("[Cliente] Interfaz: " + networkInterface.getDisplayName());
 
         } catch (IOException e) {
