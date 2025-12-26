@@ -4,11 +4,12 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Collection;
 import java.util.Enumeration;
 
 public class ProtocoloInternetv4 {
-    /************************************ Comprobacación de IPv4 Clase D (Listo) *********************************************/
+
+    /************************************ Comprobación de IPv4 Clase D *********************************************/
+
     public static boolean checkMulticast(String ipV4){ //min:224.0.0.1 - max:239.255.255.255
         boolean salida = false;
         String[] fragmentoIPv4 = ipV4.split("\\.");
@@ -42,6 +43,7 @@ public class ProtocoloInternetv4 {
     }
 
     /************************************ Sumador más 1 a la IP **************************************/
+
     public static String generarIPMulticast(String ipV4){
         String[] fragmentoIPv4 = ipV4.split("\\."); //Fracciono la IP
         int[] fragmentoIPv4Integer = new int[fragmentoIPv4.length];
@@ -73,16 +75,18 @@ public class ProtocoloInternetv4 {
             fragmentoIPv4Integer[3] += 1;
         }
 
-        for(int i = 0; i<fragmentoIPv4Integer.length; i++){
-            ipV4= fragmentoIPv4Integer[0] + "." + fragmentoIPv4Integer[1] + "." + fragmentoIPv4Integer[2] + "." + fragmentoIPv4Integer[3];
+        for(int i = 0; i<fragmentoIPv4.length; i++){
+            fragmentoIPv4[i] = String.valueOf(fragmentoIPv4Integer[i]);
         }
-        return ipV4;
+
+        return String.join(".", fragmentoIPv4);
     }
 
-    /************************************** Metodos adicionales a los superiores *****************************/
+    /************************************ Comprobaciones **************************************/
+
     public static boolean checkRangoClaseD(int fragmentoIP){
         boolean salida = false;
-        if( fragmentoIP <= 239 && fragmentoIP >= 224){
+        if(fragmentoIP<= 239 && fragmentoIP>= 224){
             salida = true;
         } else {
             salida = false;
@@ -99,6 +103,7 @@ public class ProtocoloInternetv4 {
         }
         return salida;
     }
+
     /*********************************************** Comprobar rango Puertos *****************************************************/
 
     public static boolean checkRangoPuerto(int puerto){
@@ -113,11 +118,13 @@ public class ProtocoloInternetv4 {
     }
 
     private static NetworkInterface networkInterface;
+
     public static NetworkInterface getNetwork(){
         return networkInterface;
     }
-    
+
     /****** Método para obtener la IP local IPv4 dinámicamente *******/
+
     public static String getLocalIPv4Address(){
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -138,30 +145,31 @@ public class ProtocoloInternetv4 {
         }
         return "127.0.0.1"; //fallback a localhost
     }
-    
+
+    /****** Método para obtener la NetworkInterface IPv4 (CORREGIDO) *******/
+
     public static NetworkInterface getIPv4Network(){
         try {
             Enumeration<NetworkInterface> listNetworks = NetworkInterface.getNetworkInterfaces();
             while(listNetworks.hasMoreElements()){
                 NetworkInterface prueba = listNetworks.nextElement();
-
-                // 🔥 FUERZA WiFi real (192.168.1.X)
-                Enumeration<InetAddress> ips = prueba.getInetAddresses();
-                while(ips.hasMoreElements()){
-                    InetAddress ip = ips.nextElement();
-                    if(ip instanceof Inet4Address &&
-                            ip.getHostAddress().startsWith("192.168.1.") &&  // ← LAN real
-                            !ip.isLoopbackAddress()){
-
-                        System.out.println("🔥 WIFI REAL: " + prueba.getDisplayName());
-                        System.out.println("   → IP CORRECTA: " + ip.getHostAddress());
-                        networkInterface = prueba;
-                        return prueba;
+                if(prueba.isUp() && !prueba.isLoopback() && !prueba.isVirtual()){
+                    Enumeration<InetAddress> ips = prueba.getInetAddresses();
+                    while(ips.hasMoreElements()){
+                        InetAddress ip = ips.nextElement();
+                        if(ip instanceof Inet4Address &&
+                                !ip.isLoopbackAddress() &&
+                                ip.isSiteLocalAddress()){ // Acepta cualquier IP privada
+                            System.out.println("✅ Red encontrada: " + prueba.getDisplayName());
+                            System.out.println("   → IP: " + ip.getHostAddress());
+                            networkInterface = prueba;
+                            return prueba;
+                        }
                     }
                 }
             }
         } catch (SocketException e) {
-            System.out.println("[Error] No WiFi encontrada");
+            System.out.println("[Error] No se encontró interfaz de red");
         }
         return null;
     }

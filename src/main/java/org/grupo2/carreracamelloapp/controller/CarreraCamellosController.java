@@ -42,9 +42,13 @@ public class CarreraCamellosController {
     @FXML
     protected void onIniciarCarreraClick(ActionEvent event) {
         //Escucha del boton UI
-        EventPosicion moviento = new EventPosicion(camello.getNombreCliente(), camello.movimientoRandom());
-        camello.envioPaqueteUDP(moviento, camello.getMS(), camello.getInetAddress());
+        EventPosicion movimiento = new EventPosicion(camello.getNombreCliente(), camello.movimientoRandom());
+
+        // ✅ Añade el puerto UDP como último parámetro
+        int puertoUDP = camello.getMS().getLocalPort(); // Obtiene el puerto del MulticastSocket
+        camello.envioPaqueteUDP(movimiento, camello.getMS(), camello.getInetAddress(), puertoUDP);
     }
+
 
     //Mover camellos
 //Mover camellos
@@ -56,22 +60,26 @@ public class CarreraCamellosController {
             return;
         }
 
+        System.out.println("[Controller] Procesando movimiento de: '" + eventPosicion.getPropietario() + "'");
+        System.out.println("[Controller] Comparando con:");
+        System.out.println("  [0] '" + listCamellos[0].getNombreCliente() + "'");
+        System.out.println("  [1] '" + listCamellos[1].getNombreCliente() + "'");
+        System.out.println("  [2] '" + listCamellos[2].getNombreCliente() + "'");
+
         if (eventPosicion.getPropietario().equals(listCamellos[0].getNombreCliente())) {
             camello1.setLayoutX(camello1.getLayoutX() + eventPosicion.getMovimiento());
-            System.out.println("[Controller] " + eventPosicion.getPropietario()
-                    + " se movió " + eventPosicion.getMovimiento());
+            System.out.println("[Controller] ✅ Camello1 movido: " + eventPosicion.getPropietario());
         } else if (eventPosicion.getPropietario().equals(listCamellos[1].getNombreCliente())) {
             camello2.setLayoutX(camello2.getLayoutX() + eventPosicion.getMovimiento());
-            System.out.println("[Controller] " + eventPosicion.getPropietario()
-                    + " se movió " + eventPosicion.getMovimiento());
+            System.out.println("[Controller] ✅ Camello2 movido: " + eventPosicion.getPropietario());
         } else if (eventPosicion.getPropietario().equals(listCamellos[2].getNombreCliente())) {
             camello3.setLayoutX(camello3.getLayoutX() + eventPosicion.getMovimiento());
-            System.out.println("[Controller] " + eventPosicion.getPropietario()
-                    + " se movió " + eventPosicion.getMovimiento());
+            System.out.println("[Controller] ✅ Camello3 movido: " + eventPosicion.getPropietario());
         } else {
-            System.out.println("[Warning] No conoce camello");
+            System.out.println("[Warning] ❌ Camello NO RECONOCIDO: '" + eventPosicion.getPropietario() + "'");
         }
     }
+
 
 
     /******************************* Metodos Acceso Exterior *********************************************/

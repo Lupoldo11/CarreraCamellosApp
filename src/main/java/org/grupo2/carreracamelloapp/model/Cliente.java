@@ -7,33 +7,34 @@ import javafx.scene.Parent;
 import org.grupo2.carreracamelloapp.StartApplication;
 import org.grupo2.carreracamelloapp.controller.CarreraCamellosController;
 import org.grupo2.carreracamelloapp.model.mensajes.*;
-
 import java.io.*;
 import java.net.*;
 import java.util.Collection;
 
 public class Cliente extends Componente implements Runnable,Serializable{
+
     /******************************* Atributos Static *********************************************/
+
     //Conexion TCP
     public static int puertoTCP;
-    public static String conexionTCP; //cambiar por IP del ordenador en la red WEDU o localhost
-    //192.168.113.100 -> pc central
+    public static String conexionTCP;
+    public static Cliente[] listCamellos; // ✅ STATIC para TODOS los clientes
 
     /******************************* Atributos Clase *********************************************/
+
     private MulticastSocket ms;
     private InetAddress grupo;
-    private String nombreCliente; //nombreCliente == camello1
+    private String nombreCliente;
     private AsignacionGrupo datosGrupo;
     private CarreraCamellosController controller;
     private StartApplication application;
     private NetworkInterface networkInterface;
-
     private Cliente camello2;
     private Cliente camello3;
-
     private int distancia;
 
     /**************************************** Constructor ***************************************/
+
     public Cliente (String nombre, int distancia){
         this.nombreCliente= nombre;
         this.distancia = distancia;
@@ -45,10 +46,9 @@ public class Cliente extends Componente implements Runnable,Serializable{
     }
 
     /**************************************** Métodos *******************************************/
+
     public Cliente getCamello2() { return camello2; }
-
     public int getDistancia() { return distancia; }
-
     public void movimiento(int movimiento){ this.distancia += movimiento;}
 
     public CarreraCamellosController getController(){
@@ -84,23 +84,38 @@ public class Cliente extends Componente implements Runnable,Serializable{
     }
 
     public void asignarCamellos(EventInicio datosInicio) {
-        Cliente[] camellos = datosInicio.getParticipantes();
-        CarreraCamellosController.setListCamellos(camellos);
+        listCamellos = datosInicio.getParticipantes();
+        System.out.println("[Cliente] ✅ Camellos asignados: " + listCamellos.length);
+
+        // ✅ DEBUG: Imprimir nombres de TODOS los camellos
+        for (int i = 0; i < listCamellos.length; i++) {
+            System.out.println("  [" + i + "] " + listCamellos[i].getNombreCliente());
+        }
+
+        if (this.controller != null) {
+            CarreraCamellosController.setListCamellos(listCamellos);
+            System.out.println("[Cliente] Controller actualizado");
+        } else {
+            System.out.println("[Cliente] Controller null, pero listCamellos STATIC OK");
+        }
+    }
+
+
+    // ✅ GETTER para que controller acceda a listCamellos STATIC
+    public static Cliente[] getListCamellos() {
+        return listCamellos;
     }
 
     public void joinMulticast() {
         try {
-            //Inicio de conexión multicast UDP
-            ms = new MulticastSocket(datosGrupo.getPuertoUDP()); //averiguar como sacarlo
-            grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast()); //nombreIPMulticast
+            ms = new MulticastSocket(datosGrupo.getPuertoUDP());
+            grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast());
             networkInterface = ProtocoloInternetv4.getIPv4Network();
-
-            SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP()); //Prueba conectar
-            ms.setReuseAddress(true); //esto es una prueba
-
-            ms.joinGroup(sa, networkInterface); //Se uniría
-            System.out.println("[Cliente] Uniendose de la conexión:" + datosGrupo.getIpV4Multicast() + " y puerto:" + datosGrupo.getPuertoUDP());
-
+            SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
+            ms.setReuseAddress(true);
+            ms.joinGroup(sa, networkInterface);
+            System.out.println("[Cliente] Uniendose de la conexión:" + datosGrupo.getIpV4Multicast() +
+                    " y puerto:" + datosGrupo.getPuertoUDP());
         } catch (IOException e) {
             System.out.println("[Error] No ha sido posible conectar al multicast");
         }
@@ -109,14 +124,15 @@ public class Cliente extends Componente implements Runnable,Serializable{
     public void leaveMulticast() {
         try {
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
-            ms.leaveGroup(sa, networkInterface); //Salirse del Multicast
-            System.out.println("[Cliente] Desconectando de la conexión:" + datosGrupo.getIpV4Multicast() + " y puerto:" + datosGrupo.getPuertoUDP());
+            ms.leaveGroup(sa, networkInterface);
+            System.out.println("[Cliente] Desconectando de la conexión:" + datosGrupo.getIpV4Multicast() +
+                    " y puerto:" + datosGrupo.getPuertoUDP());
         } catch (IOException e) {
             System.out.println("[Error] No ha sido posible desconectase del multicast");
         }
     }
 
-    public static CarreraCamellosController generateController() { //Obtener una instancia del controlador
+    public static CarreraCamellosController generateController() {
         FXMLLoader loader = new FXMLLoader(CarreraCamellosController.class.getResource("/org/grupo2/carreracamelloapp/pantallas/carreraCamellosUI.fxml"));
         try {
             Parent root = loader.load();
@@ -127,50 +143,49 @@ public class Cliente extends Componente implements Runnable,Serializable{
     }
 
     /**************************************** Ejecutables ***************************************/
+
     public static void ejecutable(String ipHost, String puertoHost, String nombreCliente) {
-        //Configurar Cliente
         puertoTCP = Integer.parseInt(puertoHost);
         conexionTCP = ipHost;
         System.out.println("[Cliente] Configuración terminada.");
-
         try {
-            //Conexión TCP (Entera)
             AsignacionGrupo datosGrupo = conexionTCP(nombreCliente);
-
-            //Generamos la instancia de cliente
             System.out.println("[Cliente] Generando usuario...");
             Cliente camello = new Cliente(nombreCliente, datosGrupo);
 
+            // ✅✅✅ UNIRSE AL MULTICAST ANTES DE LANZAR JAVAFX
+            camello.joinMulticast();
+            Thread hiloUDP = new Thread(camello);
+            hiloUDP.start();
+            System.out.println("[Cliente] ✅ Conectado al multicast y escuchando");
+
+            // ✅ Pequeña espera para asegurar que está escuchando
+            Thread.sleep(500);
+
             StartApplication.getCliente(camello);
-
             Application.launch(StartApplication.class, nombreCliente);
-
         } catch (IOException e) {
             System.out.println("[Error] Servidor Cerrado (Esto es cliente)");
+        } catch (InterruptedException e) {
+            System.out.println("[Error] Interrupción en espera");
         }
     }
 
     /**************************************** Static ***************************************/
+
     public static AsignacionGrupo conexionTCP(String nombreCliente) throws IOException {
         System.out.println("[TCP] Conectandose al servidor: " + conexionTCP);
         Socket cliente = new Socket(conexionTCP, puertoTCP);
-
-        initStream(cliente); //Abrir Streams
-
-        //Recibe la IP Multicast
+        initStream(cliente);
         AsignacionGrupo datosGrupo = (AsignacionGrupo) recibirPaqueteTCP();
         System.out.println("[TCP] IP Multicast recibida: " + datosGrupo.getIpV4Multicast());
         System.out.println("[TCP] Puerto Multicast: " + datosGrupo.getPuertoUDP());
-
-        //Mandar OK
         ListoJoinMulticast ready = new ListoJoinMulticast();
         ready.setData(nombreCliente);
         enviarPaqueteTCP(ready);
-
-        closeStream(); //Cerrar Streams
-        cliente.close(); //Cierra la TCP
+        closeStream();
+        cliente.close();
         System.out.println("[TCP] Cerrando conexión al servidor:" + conexionTCP);
-
         return datosGrupo;
     }
 
@@ -181,31 +196,46 @@ public class Cliente extends Componente implements Runnable,Serializable{
             try {
                 mensaje = recibirPaqueteUDP(ms);
                 if (mensaje instanceof EventInicio) {
-                    if (this.controller == null){
-                        System.out.println("[Controller] Controlador no cargado, está en null");
-                    } else {
+                    System.out.println("[Carrera] La carrera da comienzo YA!!");
+                    // ✅ SIEMPRE asignar camellos PRIMERO (STATIC)
+                    asignarCamellos(EventInicio.parseEventInicio(mensaje));
+                    // ✅ UI opcional DESPUÉS
+                    if (this.controller != null) {
                         this.controller.butonON();
                     }
-                    System.out.println("[Carrera] La carrera da comienzo YA!!");
-                    asignarCamellos(EventInicio.parseEventInicio(mensaje));
                 } else if (mensaje instanceof EventPosicion) {
-                    System.out.println("[Carrera] Movimiento!!");
-                    this.controller.escuchaMovimientoMulticast(EventPosicion.parseEventPosicion(mensaje));
+                    EventPosicion ep = EventPosicion.parseEventPosicion(mensaje);
+                    System.out.println("[Carrera] Movimiento de: '" + ep.getPropietario() + "' -> " + ep.getMovimiento());
+
+                    // ✅ DEBUG: Mostrar lista de camellos conocidos
+                    if (Cliente.listCamellos != null) {
+                        System.out.println("[DEBUG] Camellos conocidos:");
+                        for (int i = 0; i < listCamellos.length; i++) {
+                            System.out.println("  [" + i + "] '" + listCamellos[i].getNombreCliente() + "'");
+                        }
+                    }
+
+                    if (Cliente.listCamellos != null && this.controller != null) {
+                        this.controller.escuchaMovimientoMulticast(ep);
+                    } else {
+                        System.out.println("[Warning] listCamellos no inicializado, ignorando movimiento de " +
+                                ep.getPropietario());
+                    }
                 } else if (mensaje instanceof EventFinalizacion) {
                     System.out.println("[Carrera] Fin!!");
-                    this.controller.butonOFF();
+                    if (this.controller != null) {
+                        this.controller.butonOFF();
+                    }
                     salida = victoria(EventFinalizacion.parseEventFinalizacion(mensaje));
-                    //aqui hacer que el controller saque un podio
                 } else {
                     System.out.println("[Warning] Mensaje no identificado");
                 }
             } catch (IOException e) {
                 System.out.println("[Error] Error de lectura");
             } catch (ClassNotFoundException e) {
-                System.out.println("[Error] Error con el cash");
+                System.out.println("[Error] Error con el cast");
             }
         }
-
         leaveMulticast();
         System.out.println("[Cliente] Final de la Carrera y Programa");
     }
@@ -215,14 +245,12 @@ public class Cliente extends Componente implements Runnable,Serializable{
         for (int i = 0; i < podio.length; i++) {
             System.out.println("[Carrera] Posiciones " + (i + 1) + ": " + podio[i].getNombreCliente());
         }
-        //Lanzar la UI Podio
         return false;
     }
 
     @Override
     public void run() {
-        //lanza el bucle
-        System.out.println("👂 CLIENTE ESCUCHA: " + grupo.getHostAddress() + ":2300");
+        System.out.println("👂 CLIENTE ESCUCHA: " + grupo.getHostAddress() + ":" + datosGrupo.getPuertoUDP());
         cicloCarrera();
     }
 }
