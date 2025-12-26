@@ -109,17 +109,27 @@ public class Cliente extends Componente implements Runnable,Serializable{
     public void joinMulticast() {
         try {
             ms = new MulticastSocket(datosGrupo.getPuertoUDP());
+            ms.setReuseAddress(true); // ✅ CRÍTICO
+
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast());
             networkInterface = ProtocoloInternetv4.getIPv4Network();
+
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
-            ms.setReuseAddress(true);
             ms.joinGroup(sa, networkInterface);
+
+            // ✅ TAMBIÉN sin interfaz específica
+            ms.joinGroup(grupo);
+
             System.out.println("[Cliente] Uniendose de la conexión:" + datosGrupo.getIpV4Multicast() +
                     " y puerto:" + datosGrupo.getPuertoUDP());
+            System.out.println("[Cliente] Interfaz: " + networkInterface.getDisplayName());
+
         } catch (IOException e) {
             System.out.println("[Error] No ha sido posible conectar al multicast");
+            e.printStackTrace();
         }
     }
+
 
     public void leaveMulticast() {
         try {

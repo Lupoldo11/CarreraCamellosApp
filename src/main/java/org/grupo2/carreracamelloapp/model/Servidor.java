@@ -39,18 +39,31 @@ public class Servidor extends Componente implements Runnable{
 
     public void joinMulticast(){
         try {
+            // ✅ BIND al puerto, pero SIN especificar interfaz aún
             ms = new MulticastSocket(datosGrupo.getPuertoUDP());
+            ms.setReuseAddress(true); // ✅ CRÍTICO para múltiples máquinas
+
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast());
-            SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
             networkInterface = ProtocoloInternetv4.getIPv4Network();
+
+            // ✅ Unirse al grupo multicast EN TODAS LAS INTERFACES
+            SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
             ms.joinGroup(sa, networkInterface);
+
+            // ✅ TAMBIÉN unirse sin especificar interfaz (para compatibilidad)
+            ms.joinGroup(grupo);
+
             System.out.println("[Servidor] Unido a multicast " + grupo.getHostAddress() +
                     ":" + datosGrupo.getPuertoUDP());
+            System.out.println("[Servidor] Interfaz: " + networkInterface.getDisplayName());
+            System.out.println("[Servidor] Escuchando paquetes desde TODAS las máquinas");
+
         } catch (IOException e) {
             System.out.println("[Error] Error al hacer el multicast");
             e.printStackTrace();
         }
     }
+
 
     public void leaveMulticast(){
         try {
