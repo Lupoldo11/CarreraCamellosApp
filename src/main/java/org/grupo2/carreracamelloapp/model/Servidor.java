@@ -4,7 +4,8 @@ import org.grupo2.carreracamelloapp.model.mensajes.*;
 
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Servidor extends Componente implements Runnable{
     /************************ Atributos Configuración-generales *******************************/
@@ -23,6 +24,7 @@ public class Servidor extends Componente implements Runnable{
     private final int posicionMeta = 780;
     private Cliente[] camellos;
     private NetworkInterface networkInterface;
+    private List<String> clientes = new ArrayList<>();  // Lista de clientes conectados
 
     /**************************************** Constructor ***************************************/
     public Servidor(int contador, AsignacionGrupo datosGrupo, Cliente[] camellos){
@@ -35,12 +37,14 @@ public class Servidor extends Componente implements Runnable{
     /**************************************** Métodos ***************************************/
     public void joinMulticast(){
         try {
-            ms = new MulticastSocket(datosGrupo.getPuertoUDP()); // -> atributo
-            grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast()); // -> atributo
+            ms = new MulticastSocket(datosGrupo.getPuertoUDP()); // puerto UDP de la carrera
+            grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast());
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
             networkInterface = ProtocoloInternetv4.getIPv4Network();
 
-            ms.joinGroup(sa, networkInterface); // Unirse al Multicast
+            ms.joinGroup(sa, networkInterface);
+            System.out.println("[Servidor] Unido a multicast " + grupo.getHostAddress() +
+                    ":" + datosGrupo.getPuertoUDP());
         } catch (IOException e) {
             System.out.println("[Error] Error al hacer el multicast");
         }
@@ -48,8 +52,8 @@ public class Servidor extends Componente implements Runnable{
 
     public void leaveMulticast(){
         try {
-            SocketAddress sa = new InetSocketAddress(grupo, puertoUDP);
-            ms.leaveGroup(sa, networkInterface); //Salirse del Multicast
+            SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP()); // ← usa datosGrupo
+            ms.leaveGroup(sa, networkInterface);
             System.out.println("[Carrera"+contador+"] Desconectado del Multicast");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -66,35 +70,32 @@ public class Servidor extends Componente implements Runnable{
         ipUDP = ipMulticast;
         System.out.println("[Servidor] Configuración terminada.");
 
-        //Conexión TCP
         try {
             System.out.println("[Servidor] Servidor disponible...");
-            ServerSocket servidor = new ServerSocket(puertoTCP, 50, InetAddress.getByName("0.0.0.0"));
+            ServerSocket servidor =
+                    new ServerSocket(puertoTCP, 50, InetAddress.getByName("0.0.0.0"));
 
-            while(true){ //Espera infinita a jugadores
+            while(true){
                 System.out.println("[Servidor] Esperando conexión...");
 
-                //determina la IP de este grupo (cada vuelta = cada grupo)
                 AsignacionGrupo mensaje = new AsignacionGrupo(puertoUDP, ipUDP);
-
                 Cliente[] listCamellos = new Cliente[3];
 
                 for(int i = 0; i< numCliente; i++){
                     Socket cliente = servidor.accept();
                     initStream(cliente);
 
-                    enviarPaqueteTCP(mensaje); //Envio de Objeto SendIPMulticast -> Client
+                    enviarPaqueteTCP(mensaje);
 
                     ListoJoinMulticast ready = (ListoJoinMulticast) recibirPaqueteTCP();
                     System.out.println("[Servidor] Cliente-> "+ready.getData()+" aceptado");
-                    listCamellos[i] = new Cliente(ready.getData(),0); //Se crea una Instancia por cada jugador
+                    listCamellos[i] = new Cliente(ready.getData(),0);
 
                     closeStream();
-                    cliente.close(); //cerrarse los clientes ya que se ha mandado la IP
+                    cliente.close();
                 }
                 System.out.println("[Servidor] Participantes asignados");
 
-                //Inicia Configuración de la carrera
                 Servidor server = new Servidor(contador, mensaje ,listCamellos);
                 server.joinMulticast();
                 System.out.println("[Servidor] Iniciando Carrera...");
@@ -110,18 +111,22 @@ public class Servidor extends Componente implements Runnable{
     /**************************************** Hilos *********************************************/
     public boolean carrera(EventPosicion eventPosicion){
         boolean salida = false;
-        System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+" se mueve "+eventPosicion.getMovimiento()); //Log del movimiento
+        System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+
+                " se mueve "+eventPosicion.getMovimiento());
         if (camellos[0].getDistancia() < posicionMeta && camellos[1].getDistancia() < posicionMeta
                 && camellos[2].getDistancia() < posicionMeta){
             if (eventPosicion.getPropietario().equals(camellos[0].getNombreCliente())){
                 camellos[0].movimiento(eventPosicion.getMovimiento());
-                System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+" está en: "+camellos[0].getDistancia());
+                System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+
+                        " está en: "+camellos[0].getDistancia());
             } else if (eventPosicion.getPropietario().equals(camellos[1].getNombreCliente())){
                 camellos[1].movimiento(eventPosicion.getMovimiento());
-                System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+" está en: "+camellos[1].getDistancia());
+                System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+
+                        " está en: "+camellos[1].getDistancia());
             } else if (eventPosicion.getPropietario().equals(camellos[2].getNombreCliente())){
                 camellos[2].movimiento(eventPosicion.getMovimiento());
-                System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+" está en: "+camellos[2].getDistancia());
+                System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+
+                        " está en: "+camellos[2].getDistancia());
             } else {
                 System.out.println("[Warning] Camello no encontrado");
             }
@@ -133,25 +138,25 @@ public class Servidor extends Componente implements Runnable{
     }
 
     public void posicionesMeta(){
-        Cliente[] podio; //Camellos A B C
+        Cliente[] podio;
         if (camellos[0].getDistancia()>camellos[1].getDistancia()){
-            if (camellos[0].getDistancia()<camellos[2].getDistancia()){ // CAB
+            if (camellos[0].getDistancia()<camellos[2].getDistancia()){
                 podio = configuracionPodio(camellos[2],camellos[0],camellos[1]);
             } else {
-                if (camellos[1].getDistancia()<camellos[2].getDistancia()){ //ACB
+                if (camellos[1].getDistancia()<camellos[2].getDistancia()){
                     podio =configuracionPodio(camellos[0],camellos[2],camellos[1]);
-                } else { //ABC
+                } else {
                     podio =configuracionPodio(camellos[0],camellos[1],camellos[2]);
                 }
             }
         } else {
             if (camellos[1].getDistancia()>camellos[2].getDistancia()){
-                if (camellos[2].getDistancia()<camellos[0].getDistancia()){ //BAC
+                if (camellos[2].getDistancia()<camellos[0].getDistancia()){
                     podio =configuracionPodio(camellos[1],camellos[0],camellos[2]);
-                } else{ //BCA
+                } else{
                     podio =configuracionPodio(camellos[1],camellos[2],camellos[0]);
                 }
-            } else { //CBA
+            } else {
                 podio =configuracionPodio(camellos[2],camellos[1],camellos[0]);
             }
         }
@@ -160,9 +165,11 @@ public class Servidor extends Componente implements Runnable{
 
     public void envioEventFinalizacion(Cliente[] podio){
         EventFinalizacion finalizacion = new EventFinalizacion(podio);
-        envioPaqueteUDP(finalizacion,ms,grupo); //Envio mensaje al Multicast
+        // ⬇ ENVÍO usando puerto UDP de la carrera
+        envioPaqueteUDP(finalizacion, ms, grupo);
         System.out.println("[Carrera"+contador+"] Carrera finalizada");
-        System.out.println("**Podio**\n\t1º) "+podio[0].getNombreCliente()+"\n\t2º) "+podio[1].getNombreCliente()+
+        System.out.println("**Podio**\n\t1º) "+podio[0].getNombreCliente()+
+                "\n\t2º) "+podio[1].getNombreCliente()+
                 "\n\t3º) "+podio[2].getNombreCliente());
     }
 
@@ -174,16 +181,18 @@ public class Servidor extends Componente implements Runnable{
     public void run() {
         //Enviar Inicio Carrera -> Clientes
         EventInicio inicio = new EventInicio(camellos);
-        envioPaqueteUDP(inicio, ms, grupo);
+        envioPaqueteUDP(inicio, ms, grupo);  // ✅ Puerto 54321
+        System.out.println("🎯 SERVIDOR ENVÍA: " + grupo.getHostAddress() + ":" + datosGrupo.getPuertoUDP());
         System.out.println("[Carrera"+contador+"] Carrera Iniciada");
 
+        // ❌ SIN esperar confirmaciones (lista clientes vacía)
         Mensaje mensaje;
         boolean salida = false;
         while(!salida){
             try {
                 mensaje = recibirPaqueteUDP(ms);
                 if(mensaje instanceof EventInicio){
-                    //Nada, porque sería eco de su propio envio
+                    // eco ignorado
                 } else if (mensaje instanceof EventPosicion){
                     salida = carrera(EventPosicion.parseEventPosicion(mensaje));
                 } else {
@@ -196,7 +205,7 @@ public class Servidor extends Componente implements Runnable{
             }
         }
 
-        try { //Esperar un poco a terminar
+        try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             System.out.println("[Error] Error sleep carrera"+contador);
@@ -204,4 +213,6 @@ public class Servidor extends Componente implements Runnable{
         System.out.println("[Carrera"+contador+"] Protocolo de cierre...");
         leaveMulticast();
     }
+
+
 }

@@ -222,6 +222,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
     @Override
     public void run() {
         //lanza el bucle
+        System.out.println("👂 CLIENTE ESCUCHA: " + grupo.getHostAddress() + ":2300");
         cicloCarrera();
     }
 }

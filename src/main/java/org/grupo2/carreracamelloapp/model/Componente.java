@@ -18,7 +18,7 @@ public class Componente {
             byte[] mensaje= bs.toByteArray();
 
             //Enviar objeto
-            int puerto = ms.getLocalPort(); // o mejor, pásalo como parámetro en vez de depender de ms
+            int puerto = 54321; // o mejor, pásalo como parámetro en vez de depender de ms
             DatagramPacket paqueteEnvio = new DatagramPacket(mensaje, mensaje.length, grupo, puerto);
             ms.send(paqueteEnvio);
         } catch (IOException e) {
