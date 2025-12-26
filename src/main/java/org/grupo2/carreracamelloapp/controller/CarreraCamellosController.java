@@ -47,23 +47,32 @@ public class CarreraCamellosController {
     }
 
     //Mover camellos
+//Mover camellos
     protected void escuchaMoverCamellos(EventPosicion eventPosicion){
-        if (eventPosicion.getPropietario().equals(listCamellos[0].getNombreCliente())){
-            //mover el camello de lugar UI
+        // Defensa: puede que aún no se haya recibido EventInicio
+        if (listCamellos == null || listCamellos.length < 3) {
+            System.out.println("[Warning] listCamellos no inicializado, ignorando movimiento de "
+                    + eventPosicion.getPropietario());
+            return;
+        }
+
+        if (eventPosicion.getPropietario().equals(listCamellos[0].getNombreCliente())) {
             camello1.setLayoutX(camello1.getLayoutX() + eventPosicion.getMovimiento());
-            System.out.println("[Controller] "+eventPosicion.getPropietario()+" se movió "+eventPosicion.getMovimiento());
-        } else if (eventPosicion.getPropietario().equals(listCamellos[1].getNombreCliente())){
-            //mover el camello de lugar UI
+            System.out.println("[Controller] " + eventPosicion.getPropietario()
+                    + " se movió " + eventPosicion.getMovimiento());
+        } else if (eventPosicion.getPropietario().equals(listCamellos[1].getNombreCliente())) {
             camello2.setLayoutX(camello2.getLayoutX() + eventPosicion.getMovimiento());
-            System.out.println("[Controller] "+eventPosicion.getPropietario()+" se movió "+eventPosicion.getMovimiento());
-        } else if (eventPosicion.getPropietario().equals(listCamellos[2].getNombreCliente())){
-            //mover el camello de lugar UI
+            System.out.println("[Controller] " + eventPosicion.getPropietario()
+                    + " se movió " + eventPosicion.getMovimiento());
+        } else if (eventPosicion.getPropietario().equals(listCamellos[2].getNombreCliente())) {
             camello3.setLayoutX(camello3.getLayoutX() + eventPosicion.getMovimiento());
-            System.out.println("[Controller] "+eventPosicion.getPropietario()+" se movió "+eventPosicion.getMovimiento());
+            System.out.println("[Controller] " + eventPosicion.getPropietario()
+                    + " se movió " + eventPosicion.getMovimiento());
         } else {
             System.out.println("[Warning] No conoce camello");
         }
     }
+
 
     /******************************* Metodos Acceso Exterior *********************************************/
     //Para enviar el movimiento desde fuera

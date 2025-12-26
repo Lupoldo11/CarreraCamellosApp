@@ -18,7 +18,8 @@ public class Componente {
             byte[] mensaje= bs.toByteArray();
 
             //Enviar objeto
-            DatagramPacket paqueteEnvio = new DatagramPacket(mensaje, mensaje.length, grupo, ms.getLocalPort());
+            int puerto = ms.getLocalPort(); // o mejor, pásalo como parámetro en vez de depender de ms
+            DatagramPacket paqueteEnvio = new DatagramPacket(mensaje, mensaje.length, grupo, puerto);
             ms.send(paqueteEnvio);
         } catch (IOException e) {
             System.out.println("[Error] Envio paquete no realizado");

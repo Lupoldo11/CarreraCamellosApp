@@ -25,6 +25,7 @@ public class StartApplication extends Application {
 
         // Vincular cliente ↔ controller
         camello.setController(controller);
+        CarreraCamellosController.setCliente(camello);
         // Si tu controller tiene setCliente, mejor también:
         // controller.setCliente(camello);
 
