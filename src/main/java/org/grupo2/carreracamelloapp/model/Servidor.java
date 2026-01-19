@@ -38,7 +38,7 @@ public class Servidor extends Componente implements Runnable{
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast()); // -> atributo
 
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
-            NetworkInterface ni = ProtocoloInternetv4.getIPv4Network();
+            NetworkInterface ni = NetworkInterface.getByName("eth2");
             ms.joinGroup(sa, ni); // Unirse al Multicast
         } catch (IOException e) {
             System.out.println("[Error] Error al hacer el multicast");
@@ -48,7 +48,7 @@ public class Servidor extends Componente implements Runnable{
     public void leaveMulticast(){
         try {
             SocketAddress sa = new InetSocketAddress(grupo, puertoUDP);
-            NetworkInterface ni = ProtocoloInternetv4.getNetwork(); //mirar esto
+            NetworkInterface ni = NetworkInterface.getByName("eth2");
             ms.leaveGroup(sa, ni); //Salirse del Multicast
             System.out.println("[Carrera"+contador+"] Desconectado del Multicast");
         } catch (IOException e) {

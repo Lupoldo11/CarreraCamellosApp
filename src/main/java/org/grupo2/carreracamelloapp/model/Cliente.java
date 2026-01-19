@@ -94,8 +94,8 @@ public class Cliente extends Componente implements Runnable,Serializable{
             grupo = InetAddress.getByName(datosGrupo.getIpV4Multicast()); //nombreIPMulticast
 
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP()); //Prueba conectar
-            NetworkInterface ni = ProtocoloInternetv4.getIPv4Network();; //Mirar eso de aquí
-            ms.setReuseAddress(true); //esto es una prueba
+            NetworkInterface ni = NetworkInterface.getByName("eth2");
+            //ms.setReuseAddress(true); //esto es una prueba
 
             ms.joinGroup(sa, ni); //Se uniría
             System.out.println("[Cliente] Uniendose de la conexión:" + datosGrupo.getIpV4Multicast() + " y puerto:" + datosGrupo.getPuertoUDP());
@@ -108,7 +108,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
     public void leaveMulticast() {
         try {
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
-            NetworkInterface ni = ProtocoloInternetv4.getNetwork(); //Tarjeta de este ordena
+            NetworkInterface ni = NetworkInterface.getByName("eth2");
 
             ms.leaveGroup(sa, ni); //Salirse del Multicast
             System.out.println("[Cliente] Desconectando de la conexión:" + datosGrupo.getIpV4Multicast() + " y puerto:" + datosGrupo.getPuertoUDP());
