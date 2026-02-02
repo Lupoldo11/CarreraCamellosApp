@@ -89,6 +89,13 @@ public class Servidor extends Componente implements Runnable{
                     System.out.println("[Servidor] Cliente-> "+ready.getData()+" aceptado");
                     listCamellos[i] = new Cliente(ready.getData(),0); //Se crea una Instancia por cada jugador
 
+                    //Nuevo
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     closeStream();
                     cliente.close(); //cerrarse los clientes ya que se ha mandado la IP
                 }
@@ -173,6 +180,7 @@ public class Servidor extends Componente implements Runnable{
     @Override
     public void run() {
         //Enviar Inicio Carrera -> Clientes
+
         EventInicio inicio = new EventInicio(camellos);
         envioPaqueteUDP(inicio, ms, grupo);
         System.out.println("[Carrera"+contador+"] Carrera Iniciada");
