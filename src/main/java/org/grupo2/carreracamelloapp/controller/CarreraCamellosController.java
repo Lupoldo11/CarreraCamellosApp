@@ -39,16 +39,6 @@ public class CarreraCamellosController {
     @FXML
     private ImageView camello3;
 
-    //Nuevo
-    @FXML
-    private Label gold;
-
-    @FXML
-    private Label silver;
-
-    @FXML
-    private Label bronze;
-
     /******************************* Metodos UI (Controller) *********************************************/
     @FXML
     protected void onIniciarCarreraClick(ActionEvent event) {
@@ -57,7 +47,9 @@ public class CarreraCamellosController {
         camello.envioPaqueteUDP(moviento, camello.getMS(), camello.getInetAddress());
     }
 
-    //Mover camellos
+    /**
+     * Mueve el camello después de comprobar de quien es
+     * */
     protected void escuchaMoverCamellos(EventPosicion eventPosicion){
         if (eventPosicion.getPropietario().equals(listCamellos[0].getNombreCliente())){
             //mover el camello de lugar UI

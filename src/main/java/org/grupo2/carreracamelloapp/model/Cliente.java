@@ -1,7 +1,6 @@
 package org.grupo2.carreracamelloapp.model;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.grupo2.carreracamelloapp.StartApplication;
@@ -10,7 +9,6 @@ import org.grupo2.carreracamelloapp.model.mensajes.*;
 
 import java.io.*;
 import java.net.*;
-import java.util.Collection;
 
 public class Cliente extends Componente implements Runnable,Serializable{
     /******************************* Atributos Static *********************************************/
@@ -83,6 +81,9 @@ public class Cliente extends Componente implements Runnable,Serializable{
         return ms;
     }
 
+    /**
+     * Ajusta los camellos en la UI para que sean los mismo en todas las UI
+     * */
     public void asignarCamellos(EventInicio datosInicio) {
         Cliente[] camellos = datosInicio.getParticipantes();
         CarreraCamellosController.setListCamellos(camellos);
@@ -124,6 +125,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
         }
     }
 
+    //[Deprecated]
     public static CarreraCamellosController generateController() { //Obtener una instancia del controlador
         FXMLLoader loader = new FXMLLoader(CarreraCamellosController.class.getResource("/org/grupo2/carreracamelloapp/pantallas/carreraCamellosUI.fxml"));
         try {
@@ -135,6 +137,9 @@ public class Cliente extends Componente implements Runnable,Serializable{
     }
 
     /**************************************** Ejecutables ***************************************/
+    /**
+     * Configuración inicial de los datos para TCP para el Multicast
+     * */
     public static void ejecutable(String ipHost, String puertoHost, String nombreCliente) {
         //Configurar Cliente
         puertoTCP = Integer.parseInt(puertoHost);
@@ -187,9 +192,31 @@ public class Cliente extends Componente implements Runnable,Serializable{
         return datosGrupo;
     }
 
+    /**
+     * Muestra el podio por consola
+     * */
+    public static boolean victoria(EventFinalizacion eventFinalizacion) {
+        podio = eventFinalizacion.getPodio();
+        for (int i = 0; i < podio.length; i++) {
+            System.out.println("[Carrera] Posiciones " + (i + 1) + ": " + podio[i].getNombreCliente());
+        }
+        return false;
+    }
+
+    /*********************************** Hilo ******************************/
+    @Override
+    public void run() {
+        //lanza el bucle
+        cicloCarrera();
+    }
+
+    /**
+     * Bucle principal del Thread de la carrera (administra el funcionamiento)
+     * */
     public void cicloCarrera() {
         boolean salida = true;
         Mensaje mensaje;
+
         while (salida) {
             try {
                 mensaje = recibirPaqueteUDP(ms);
@@ -197,7 +224,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
                     if (this.controller == null){
                         System.out.println("[Controller] Controlador no cargado, está en null");
                     } else {
-                        this.controller.butonON();
+                        this.controller.butonON(); //activa el botón
                     }
                     System.out.println("[Carrera] La carrera da comienzo YA!!");
                     asignarCamellos(EventInicio.parseEventInicio(mensaje));
@@ -206,8 +233,8 @@ public class Cliente extends Componente implements Runnable,Serializable{
                     this.controller.escuchaMovimientoMulticast(EventPosicion.parseEventPosicion(mensaje));
                 } else if (mensaje instanceof EventFinalizacion) {
                     System.out.println("[Carrera] Fin!!");
-                    this.controller.butonOFF();
-                    salida = victoria(EventFinalizacion.parseEventFinalizacion(mensaje));
+                    this.controller.butonOFF(); //desactiva el botón
+                    salida = victoria(EventFinalizacion.parseEventFinalizacion(mensaje)); //ejecuta el Podio UI
                     this.controller.podio(podio);
                 } else {
                     System.out.println("[Warning] Mensaje no identificado");
@@ -219,21 +246,8 @@ public class Cliente extends Componente implements Runnable,Serializable{
             }
         }
 
+        //Protocolo de salida
         leaveMulticast();
         System.out.println("[Cliente] Final de la Carrera y Programa");
-    }
-
-    public static boolean victoria(EventFinalizacion eventFinalizacion) {
-        podio = eventFinalizacion.getPodio();
-        for (int i = 0; i < podio.length; i++) {
-            System.out.println("[Carrera] Posiciones " + (i + 1) + ": " + podio[i].getNombreCliente());
-        }
-        return false;
-    }
-
-    @Override
-    public void run() {
-        //lanza el bucle
-        cicloCarrera();
     }
 }

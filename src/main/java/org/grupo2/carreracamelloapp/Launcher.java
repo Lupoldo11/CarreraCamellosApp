@@ -18,6 +18,9 @@ public class Launcher { //IP clase: 192.168.113.1
         System.out.println("[Programa] Cerrando el programa....");
     }
 
+    /**
+     * Diferencia entra Servidor y Cliente (comprueba argumentos)
+     * */
     public static void inicio(String[] configuracion){
 
         System.out.println("[Programa] Configurando preferencias.....");

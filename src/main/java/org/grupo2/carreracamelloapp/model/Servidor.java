@@ -201,7 +201,6 @@ public class Servidor extends Componente implements Runnable{
     @Override
     public void run() {
         //Enviar Inicio Carrera -> Clientes
-
         EventInicio inicio = new EventInicio(camellos);
         envioPaqueteUDP(inicio, ms, grupo);
         System.out.println("[Carrera"+contador+"] Carrera Iniciada");
@@ -215,11 +214,11 @@ public class Servidor extends Componente implements Runnable{
                     //Nada, porque sería eco de su propio envio
                 } else if (mensaje instanceof EventPosicion){
                     salida = carrera(EventPosicion.parseEventPosicion(mensaje));
-                } else if(mensaje instanceof EventDeath){
+                } else if(mensaje instanceof EventDeath){ //comprueba si se han muerto los camellos
                     System.out.println("[Carrera] "+EventDeath.parseEventPosicion(mensaje).getPropietario()+ " salió de la carrera");
                     contadorMuertos++;
                     if(contadorMuertos >= 2){
-                        posicionesMeta();
+                        posicionesMeta(); //se debería mandar una Cliente[] diferente
                         salida = true;
                     }
                 }else {
@@ -232,6 +231,7 @@ public class Servidor extends Componente implements Runnable{
             }
         }
 
+        //Protocolo Finalización
         try { //Esperar un poco a terminar
             Thread.sleep(2000);
         } catch (InterruptedException e) {

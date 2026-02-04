@@ -1,10 +1,7 @@
 package org.grupo2.carreracamelloapp.model;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Collection;
 import java.util.Enumeration;
 
 public class ProtocoloInternetv4 {
@@ -99,7 +96,6 @@ public class ProtocoloInternetv4 {
         }
         return salida;
     }
-    /*********************************************** Comprobar rango Puertos *****************************************************/
 
     public static boolean checkRangoPuerto(int puerto){
         boolean salida = false;
@@ -112,6 +108,7 @@ public class ProtocoloInternetv4 {
         return salida;
     }
 
+    //[Deprecated]
     private static NetworkInterface networkInterface;
     public static NetworkInterface getNetwork(){
         return networkInterface;

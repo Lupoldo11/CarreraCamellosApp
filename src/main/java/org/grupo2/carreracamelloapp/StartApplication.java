@@ -7,11 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.grupo2.carreracamelloapp.controller.CarreraCamellosController;
 import org.grupo2.carreracamelloapp.model.Cliente;
-import org.grupo2.carreracamelloapp.model.mensajes.AsignacionGrupo;
 import org.grupo2.carreracamelloapp.model.mensajes.EventDeath;
-import org.grupo2.carreracamelloapp.model.mensajes.EventPosicion;
-
-import javax.swing.plaf.nimbus.State;
 import java.io.IOException;
 
 public class StartApplication extends Application {

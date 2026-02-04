@@ -1,6 +1,5 @@
 package org.grupo2.carreracamelloapp.model.mensajes;
 
-import java.io.Serializable;
 
 public class ListoJoinMulticast extends Mensaje{
     private String nombre;
