@@ -9,7 +9,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.grupo2.carreracamelloapp.controller.PodioController">
    <children>
-      <Label fx:id="bronze" layoutX="406.0" layoutY="154.0" text="Label" />
+      <Label fx:id="bronze" layoutX="406.0" layoutY="154.0" text="Label"/>
       <Label fx:id="gold" layoutX="286.0" layoutY="89.0" text="Label" />
       <Label fx:id="silver" layoutX="178.0" layoutY="132.0" text="Label" />
       <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="320.0" layoutY="163.0" pickOnBounds="true" preserveRatio="true">

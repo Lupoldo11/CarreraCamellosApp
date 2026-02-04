@@ -4,7 +4,6 @@ import org.grupo2.carreracamelloapp.model.mensajes.*;
 
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 
 public class Servidor extends Componente implements Runnable{
     /************************ Atributos Configuración-generales *******************************/
@@ -22,6 +21,8 @@ public class Servidor extends Componente implements Runnable{
 
     private final int posicionMeta = 780;
     private Cliente[] camellos;
+    private int contadorMuertos = 0;
+    private Cliente[] listaMuertos = new Cliente[numCliente];
 
     /**************************************** Constructor ***************************************/
     public Servidor(int contador, AsignacionGrupo datosGrupo, Cliente[] camellos){
@@ -31,7 +32,10 @@ public class Servidor extends Componente implements Runnable{
         System.out.println("[Carrera"+contador+"] Generado hilo de la carrera");
     }
 
-    /**************************************** Métodos ***************************************/
+    /**************************************** Métodos conexión ***************************************/
+    /**
+     * Entrar en el multicast
+     * */
     public void joinMulticast(){
         try {
             ms = new MulticastSocket(datosGrupo.getPuertoUDP()); // -> atributo
@@ -45,6 +49,9 @@ public class Servidor extends Componente implements Runnable{
         }
     }
 
+    /**
+     * Salir del multicast
+     * */
     public void leaveMulticast(){
         try {
             SocketAddress sa = new InetSocketAddress(grupo, puertoUDP);
@@ -56,6 +63,9 @@ public class Servidor extends Componente implements Runnable{
         }
     }
 
+    /**
+     * Obtener el hilo de la sala creada
+     * */
     public Thread getHilo() { return hiloSala; }
 
     /**************************************** Ejecutables ***************************************/
@@ -114,7 +124,9 @@ public class Servidor extends Componente implements Runnable{
         }
     }
 
-    /**************************************** Hilos *********************************************/
+    /**
+     * Descripción: Comprueba que camello se mueve y si se puede mover
+     * */
     public boolean carrera(EventPosicion eventPosicion){
         boolean salida = false;
         System.out.println("[Carrera"+contador+"] "+eventPosicion.getPropietario()+" se mueve "+eventPosicion.getMovimiento()); //Log del movimiento
@@ -139,6 +151,9 @@ public class Servidor extends Componente implements Runnable{
         return salida;
     }
 
+    /**
+     * Descripción: Genera el podio comparando las posiciones de los camellos
+     * */
     public void posicionesMeta(){
         Cliente[] podio; //Camellos A B C
         if (camellos[0].getDistancia()>camellos[1].getDistancia()){
@@ -165,6 +180,9 @@ public class Servidor extends Componente implements Runnable{
         envioEventFinalizacion(podio);
     }
 
+    /**
+     * Event -> lanza el evento de Finalización por el multicast (manda el podio)
+     * */
     public void envioEventFinalizacion(Cliente[] podio){
         EventFinalizacion finalizacion = new EventFinalizacion(podio);
         envioPaqueteUDP(finalizacion,ms,grupo); //Envio mensaje al Multicast
@@ -173,6 +191,9 @@ public class Servidor extends Componente implements Runnable{
                 "\n\t3º) "+podio[2].getNombreCliente());
     }
 
+    /**
+     * Descripción: Generar un Array para situar a cada jugador
+     * */
     public Cliente[] configuracionPodio(Cliente primero, Cliente segundo, Cliente tercero){
         return new Cliente[]{primero,segundo,tercero};
     }
@@ -194,7 +215,14 @@ public class Servidor extends Componente implements Runnable{
                     //Nada, porque sería eco de su propio envio
                 } else if (mensaje instanceof EventPosicion){
                     salida = carrera(EventPosicion.parseEventPosicion(mensaje));
-                } else {
+                } else if(mensaje instanceof EventDeath){
+                    System.out.println("[Carrera] "+EventDeath.parseEventPosicion(mensaje).getPropietario()+ " salió de la carrera");
+                    contadorMuertos++;
+                    if(contadorMuertos >= 2){
+                        posicionesMeta();
+                        salida = true;
+                    }
+                }else {
                     System.out.println("[Warning] Mensaje no identificado");
                 }
             } catch (IOException e) {

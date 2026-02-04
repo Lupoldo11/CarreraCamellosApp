@@ -39,7 +39,7 @@
         </HBox>
         <HBox alignment="CENTER" prefHeight="231.0" prefWidth="846.0">
             <children>
-                <Text id="winnerLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="El ganador de la carrera es:" textAlignment="CENTER">
+                <Text id="winnerLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="Suerte!!!" textAlignment="CENTER">
                     <font>
                         <Font name="Arial Italic" size="26.0" />
                     </font>

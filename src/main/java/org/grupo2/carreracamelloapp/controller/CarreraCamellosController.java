@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.grupo2.carreracamelloapp.StartApplication;
@@ -37,6 +38,16 @@ public class CarreraCamellosController {
 
     @FXML
     private ImageView camello3;
+
+    //Nuevo
+    @FXML
+    private Label gold;
+
+    @FXML
+    private Label silver;
+
+    @FXML
+    private Label bronze;
 
     /******************************* Metodos UI (Controller) *********************************************/
     @FXML
@@ -82,26 +93,37 @@ public class CarreraCamellosController {
         });
     }
 
+    //Desactivar boton
     public void butonOFF(){
         Platform.runLater(() -> {
             iniciarCarreraButton.setDisable(true);
             System.out.println("[Controller] Cambiado de estado el boton a desactivado");
-            /*try {
-                podio();
-            } catch (IOException e) {
-                System.out.println("[Controller] Ventana no disponible");
-            }*/
         });
     }
 
-    public void podio() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(PodioController.class.getResource("pantallas/podioUI.fxml"));
-        Parent root = fxmlLoader.load();
-        Stage stage = new Stage();
-        Scene scene = new Scene(root, 400, 400);
-        stage.setTitle("Podio");
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
+    /**
+     * Lanzador de la UI de podio y su configuracion
+     * */
+    public void podio(Cliente[] podio) throws IOException {
+        Platform.runLater(()->{
+            FXMLLoader fxmlLoader = new FXMLLoader(PodioController.class.getResource("/org/grupo2/carreracamelloapp/pantallas/podioUI.fxml"));
+            Parent root = null;
+            try {
+                root = fxmlLoader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Scene scene = new Scene(root, 600, 400);
+
+            //Nuevo
+            Stage primaryStage = StartApplication.getInstance().getFirtsStage();
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("Podio");
+            primaryStage.setResizable(false);
+
+            PodioController control = fxmlLoader.getController();
+            control.setPodio(podio);
+            primaryStage.show();
+        });
     }
 }

@@ -18,6 +18,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
     public static int puertoTCP;
     public static String conexionTCP; //cambiar por IP del ordenador en la red WEDU o localhost
     //192.168.113.100 -> pc central
+    public static Cliente[] podio;
 
     /******************************* Atributos Clase *********************************************/
     private MulticastSocket ms;
@@ -87,6 +88,9 @@ public class Cliente extends Componente implements Runnable,Serializable{
         CarreraCamellosController.setListCamellos(camellos);
     }
 
+    /**
+     * Entrar en el multicast
+     * */
     public void joinMulticast() {
         try {
             //Inicio de conexión multicast UDP
@@ -105,6 +109,9 @@ public class Cliente extends Componente implements Runnable,Serializable{
         }
     }
 
+    /**
+     * Salir del multicast
+     * */
     public void leaveMulticast() {
         try {
             SocketAddress sa = new InetSocketAddress(grupo, datosGrupo.getPuertoUDP());
@@ -201,7 +208,7 @@ public class Cliente extends Componente implements Runnable,Serializable{
                     System.out.println("[Carrera] Fin!!");
                     this.controller.butonOFF();
                     salida = victoria(EventFinalizacion.parseEventFinalizacion(mensaje));
-                    //aqui hacer que el controller saque un podio
+                    this.controller.podio(podio);
                 } else {
                     System.out.println("[Warning] Mensaje no identificado");
                 }
@@ -217,11 +224,10 @@ public class Cliente extends Componente implements Runnable,Serializable{
     }
 
     public static boolean victoria(EventFinalizacion eventFinalizacion) {
-        Cliente[] podio = eventFinalizacion.getPodio();
+        podio = eventFinalizacion.getPodio();
         for (int i = 0; i < podio.length; i++) {
             System.out.println("[Carrera] Posiciones " + (i + 1) + ": " + podio[i].getNombreCliente());
         }
-        //Lanzar la UI Podio
         return false;
     }
 
